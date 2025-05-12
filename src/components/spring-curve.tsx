@@ -1,15 +1,16 @@
-import { Path, Skia } from '@shopify/react-native-skia';
-import { useMemo } from 'react';
+import { Group, Path, Skia } from '@shopify/react-native-skia';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
 type SpringCurveProps = {
   width: number;
   height: number;
-  mass: number;
-  damping: number;
-  stiffness: number;
+  mass: SharedValue<number>;
+  damping: SharedValue<number>;
+  stiffness: SharedValue<number>;
   color?: string;
   horizontalPadding?: number;
   verticalPadding?: number;
+  progress: SharedValue<number>;
 };
 
 export const SpringCurve = ({
@@ -21,8 +22,9 @@ export const SpringCurve = ({
   color = 'white',
   horizontalPadding = 30,
   verticalPadding = 30,
+  progress,
 }: SpringCurveProps) => {
-  const path = useMemo(() => {
+  const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
 
     // Calculate spring motion curve
@@ -41,8 +43,8 @@ export const SpringCurve = ({
 
     for (let i = 0; i < steps; i++) {
       // Spring physics: F = -kx - cv
-      const force = -stiffness * x - damping * v;
-      const acceleration = force / mass;
+      const force = -stiffness.value * x - damping.value * v;
+      const acceleration = force / mass.value;
 
       // Update velocity and position using simple Euler integration
       v += acceleration * dt;
@@ -69,13 +71,29 @@ export const SpringCurve = ({
     mass,
   ]);
 
-  return path ? (
-    <Path
-      path={path}
-      style="stroke"
-      strokeWidth={4}
-      color={color}
-      strokeCap={'round'}
-    />
-  ) : null;
+  if (!path) return null;
+
+  return (
+    <Group>
+      <Path
+        path={path}
+        style="stroke"
+        strokeWidth={4}
+        color={color}
+        strokeCap={'round'}
+        start={0}
+        end={progress}
+      />
+      <Path
+        path={path}
+        style="stroke"
+        strokeWidth={4}
+        color={color}
+        strokeCap={'round'}
+        start={0}
+        end={1}
+        opacity={0.5}
+      />
+    </Group>
+  );
 };
