@@ -14,6 +14,7 @@ type SpringCurveProps = {
   verticalPadding?: number;
   progress: SharedValue<number>;
   strokeWidth?: number;
+  amplitude?: number; // New prop
 };
 
 export const SpringCurve = ({
@@ -27,87 +28,86 @@ export const SpringCurve = ({
   verticalPadding = 30,
   progress,
   strokeWidth = 4,
+  amplitude = 1, // Default to 1x amplitude
 }: SpringCurveProps) => {
   const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
+    const steps = 100;
 
-    // Calculate spring motion curve
-    const steps = 100; // Number of points to plot
+    const m = mass.value;
+    const c = damping.value;
+    const k = stiffness.value;
 
-    // Add padding
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
 
-    // We'll work with normalized time from 0 to 1
+    const centerY = height / 2;
+
+    const omega = Math.sqrt(k / m);
+    const zeta = c / (2 * Math.sqrt(k * m));
     const dt = 1 / steps;
 
-    // Start path at the left edge
-    const startX = horizontalPadding;
-    const startY = height / 2 + verticalPadding; // Middle of the canvas
+    let s1 = 0;
+    let s2 = 0;
 
-    springPath.moveTo(startX, startY);
+    if (zeta > 1) {
+      const sqrtTerm = Math.sqrt(zeta * zeta - 1);
+      s1 = -omega * (zeta - sqrtTerm);
+      s2 = -omega * (zeta + sqrtTerm);
+    }
 
-    let prevDisplacement = 0;
+    // Get initial displacement for normalization
+    const initialDisplacement = (() => {
+      if (zeta < 1) return 1;
+      if (zeta === 1) return 1;
+      return (Math.exp(s1 * 0) - Math.exp(s2 * 0)) / (s1 - s2);
+    })();
+
+    let prevY = 0;
 
     for (let i = 0; i <= steps; i++) {
-      const t = i * dt; // Normalized time from 0 to 1
-
-      // Calculate spring displacement at time t
-      // For an underdamped system: x(t) = Ae^(-ζωt) cos(ωdt + φ)
-      // where ω = sqrt(k/m) and ζ = c/(2√(km))
-
-      const omega = Math.sqrt(stiffness.value / mass.value); // Natural frequency
-      const zeta =
-        damping.value / (2 * Math.sqrt(stiffness.value * mass.value)); // Damping ratio
+      const t = i * dt;
 
       let displacement = 0;
 
       if (zeta < 1) {
-        // Underdamped case (oscillation)
-        const omegaD = omega * Math.sqrt(1 - zeta * zeta); // Damped frequency
+        const omegaD = omega * Math.sqrt(1 - zeta * zeta);
         displacement = Math.exp(-zeta * omega * t) * Math.cos(omegaD * t);
       } else if (zeta === 1) {
-        // Critically damped
         displacement = Math.exp(-omega * t) * (1 + omega * t);
       } else {
-        // Overdamped
-        const s1 = -zeta * omega + omega * Math.sqrt(zeta * zeta - 1);
-        const s2 = -zeta * omega - omega * Math.sqrt(zeta * zeta - 1);
         displacement = (Math.exp(s1 * t) - Math.exp(s2 * t)) / (s1 - s2);
       }
 
-      // Scale displacement to fit canvas
-      const scaledDisplacement = displacement * (drawableHeight / 3);
+      const normalized = displacement / initialDisplacement;
+      const scaledDisplacement = normalized * (drawableHeight / 2) * amplitude;
 
-      // Map to canvas coordinates
-      const xPos = startX + (i / steps) * drawableWidth;
-      const yPos = startY + scaledDisplacement;
+      const x = horizontalPadding + (i / steps) * drawableWidth;
+      const y = centerY + scaledDisplacement;
 
-      // Ensure the curve doesn't jump abruptly at the beginning
       if (i === 0) {
-        springPath.moveTo(xPos, yPos);
-        prevDisplacement = scaledDisplacement;
+        springPath.moveTo(x, y);
+        prevY = y;
       } else {
-        // Limit the change in displacement to prevent extreme jumps
-        const maxDelta = drawableHeight / 10;
-        const delta = scaledDisplacement - prevDisplacement;
-        const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, delta));
-        const clampedDisplacement = prevDisplacement + clampedDelta;
+        const maxDelta = drawableHeight / 5;
+        const delta = y - prevY;
+        const clampedY = prevY + Math.max(-maxDelta, Math.min(maxDelta, delta));
 
-        springPath.lineTo(xPos, startY + clampedDisplacement);
-        prevDisplacement = clampedDisplacement;
+        springPath.lineTo(x, clampedY);
+        prevY = clampedY;
       }
     }
 
     return springPath;
   }, [
     width,
-    horizontalPadding,
     height,
-    verticalPadding,
-    stiffness,
-    damping,
     mass,
+    damping,
+    stiffness,
+    horizontalPadding,
+    verticalPadding,
+    amplitude,
   ]);
 
   const point = useAnimateThroughPath({ path, progress });
@@ -120,7 +120,7 @@ export const SpringCurve = ({
         style="stroke"
         strokeWidth={strokeWidth}
         color={color}
-        strokeCap={'round'}
+        strokeCap="round"
         start={0}
         end={progress}
       />
@@ -129,7 +129,7 @@ export const SpringCurve = ({
         style="stroke"
         strokeWidth={strokeWidth}
         color={color}
-        strokeCap={'round'}
+        strokeCap="round"
         start={0}
         end={1}
         opacity={0.5}
