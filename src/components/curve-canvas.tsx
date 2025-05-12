@@ -74,8 +74,10 @@ export const CurveCanvas = ({
       style={{
         width: canvasWidth,
         height: canvasHeight,
-        backgroundColor: '#0c0c0c',
+        backgroundColor: '#000000',
         borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#202020ff',
       }}>
       <BezierCurve
         progress={bezierProgress}
