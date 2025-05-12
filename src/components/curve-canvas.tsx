@@ -14,7 +14,7 @@ export const CurveCanvas = () => {
       style={{
         width: canvasWidth,
         height: canvasHeight,
-        backgroundColor: 'black',
+        backgroundColor: '#ffffff',
       }}>
       <SpringCurve
         width={canvasWidth}
@@ -33,7 +33,7 @@ export const CurveCanvas = () => {
         y1={0}
         x2={0.5}
         y2={1}
-        color="#58c4ff"
+        color="#14adff"
         strokeWidth={4}
         showControlPoints={false}
       />
