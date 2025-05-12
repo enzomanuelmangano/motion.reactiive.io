@@ -33,7 +33,7 @@ export const CurveCanvas = ({
   bezierParams,
 }: CurveCanvasProps) => {
   const { width } = useWindowDimensions();
-  const canvasWidth = width * 0.9;
+  const canvasWidth = Math.min(width * 0.9, 300);
   const canvasHeight = (canvasWidth / 4) * 3;
 
   const bezierProgress = useSharedValue(0);
@@ -74,7 +74,7 @@ export const CurveCanvas = ({
       style={{
         width: canvasWidth,
         height: canvasHeight,
-        backgroundColor: '#000000',
+        backgroundColor: '#0a0a0a',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#202020ff',
@@ -88,7 +88,7 @@ export const CurveCanvas = ({
         x2={bezierParams.x2}
         y2={bezierParams.y2}
         color="#14adff"
-        strokeWidth={4}
+        strokeWidth={2}
         horizontalPadding={30}
         verticalPadding={30}
       />
@@ -102,6 +102,7 @@ export const CurveCanvas = ({
         horizontalPadding={30}
         verticalPadding={30}
         color="#ffc558"
+        strokeWidth={2}
       />
     </Canvas>
   );

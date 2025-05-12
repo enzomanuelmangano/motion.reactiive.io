@@ -13,6 +13,7 @@ type SpringCurveProps = {
   horizontalPadding?: number;
   verticalPadding?: number;
   progress: SharedValue<number>;
+  strokeWidth?: number;
 };
 
 export const SpringCurve = ({
@@ -25,6 +26,7 @@ export const SpringCurve = ({
   horizontalPadding = 30,
   verticalPadding = 30,
   progress,
+  strokeWidth = 4,
 }: SpringCurveProps) => {
   const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
@@ -77,11 +79,11 @@ export const SpringCurve = ({
 
   return (
     <Group>
-      <Circle cx={point.cx} cy={point.cy} r={5} color={color} />
+      <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} />
       <Path
         path={path}
         style="stroke"
-        strokeWidth={4}
+        strokeWidth={strokeWidth}
         color={color}
         strokeCap={'round'}
         start={0}
@@ -90,7 +92,7 @@ export const SpringCurve = ({
       <Path
         path={path}
         style="stroke"
-        strokeWidth={4}
+        strokeWidth={strokeWidth}
         color={color}
         strokeCap={'round'}
         start={0}

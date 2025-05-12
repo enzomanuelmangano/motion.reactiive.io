@@ -64,7 +64,7 @@ export const BezierCurve = ({
 
   return (
     <Group>
-      <Circle cx={point.cx} cy={point.cy} r={5} color={color} />
+      <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} />
       <Path
         path={path}
         style="stroke"
