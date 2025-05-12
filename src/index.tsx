@@ -1,14 +1,16 @@
 import { StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { CurveCanvas } from './components/curve-canvas';
+import { SpringControls } from './components/spring-controls';
 
 const App = () => {
   const springParams = {
-    mass: useSharedValue(1),
-    damping: useSharedValue(1),
-    stiffness: useSharedValue(1),
+    mass: useSharedValue(2),
+    damping: useSharedValue(20),
+    stiffness: useSharedValue(150),
   };
 
   const bezierParams = {
@@ -20,19 +22,36 @@ const App = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <CurveCanvas springParams={springParams} bezierParams={bezierParams} />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <View style={styles.content}>
+          <CurveCanvas
+            springParams={springParams}
+            bezierParams={bezierParams}
+          />
+          <SpringControls
+            mass={springParams.mass}
+            damping={springParams.damping}
+            stiffness={springParams.stiffness}
+          />
+        </View>
+      </View>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#080808',
+  },
+  content: {
+    flex: 1,
+    paddingTop: 50,
+    paddingBottom: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
   },
 });
 
