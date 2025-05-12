@@ -50,7 +50,7 @@ export const SpringCurve = ({
 
       // Map to canvas coordinates with padding
       const xPos = horizontalPadding + (i / steps) * drawableWidth;
-      const yPos = height / 2 + x * (drawableHeight / 3);
+      const yPos = height / 2 + x * (drawableHeight / 2);
 
       if (i === 0) {
         springPath.moveTo(xPos, yPos);
