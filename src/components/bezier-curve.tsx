@@ -1,6 +1,8 @@
-import { Path, Skia, Group } from '@shopify/react-native-skia';
+import { Path, Skia, Group, Circle } from '@shopify/react-native-skia';
 import React from 'react';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+
+import { useAnimateThroughPath } from '../hooks/use-animate-through-path';
 
 type BezierCurveProps = {
   width: number;
@@ -55,13 +57,14 @@ export const BezierCurve = ({
     bezierPath.moveTo(startX, startY);
     bezierPath.cubicTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
 
-    return bezierPath;
+    return bezierPath!;
   }, [width, height, x1, y1, x2, y2, horizontalPadding, verticalPadding]);
 
-  if (!path) return null;
+  const point = useAnimateThroughPath({ path, progress });
 
   return (
     <Group>
+      <Circle cx={point.cx} cy={point.cy} r={5} color={color} />
       <Path
         path={path}
         style="stroke"

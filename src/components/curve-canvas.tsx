@@ -37,32 +37,34 @@ export const CurveCanvas = ({
   const canvasHeight = (canvasWidth / 4) * 3;
 
   const bezierProgress = useSharedValue(0);
+  const springProgress = useSharedValue(0);
 
   useAnimatedReaction(
-    () => bezierParams.duration.value,
-    duration => {
+    () => {
+      return {
+        bezier: bezierParams,
+        spring: springParams,
+      };
+    },
+    ({ bezier, spring }) => {
       cancelAnimation(bezierProgress);
+      bezierProgress.value = 0;
       bezierProgress.value = withTiming(1, {
-        duration,
+        duration: bezier.duration.value,
         easing: Easing.bezier(
-          bezierParams.x1.value,
-          bezierParams.y1.value,
-          bezierParams.x2.value,
-          bezierParams.y2.value,
+          bezier.x1.value,
+          bezier.y1.value,
+          bezier.x2.value,
+          bezier.y2.value,
         ),
       });
-    },
-  );
 
-  const springProgress = useSharedValue(0);
-  useAnimatedReaction(
-    () => springParams.mass.value,
-    () => {
       cancelAnimation(springProgress);
+      springProgress.value = 0;
       springProgress.value = withSpring(1, {
-        mass: springParams.mass.value,
-        damping: springParams.damping.value,
-        stiffness: springParams.stiffness.value,
+        mass: spring.mass.value,
+        damping: spring.damping.value,
+        stiffness: spring.stiffness.value,
       });
     },
   );
