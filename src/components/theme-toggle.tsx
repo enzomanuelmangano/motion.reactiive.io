@@ -1,6 +1,8 @@
 import React from 'react';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link } from 'expo-router';
+import { View } from 'react-native';
 
 import { useUnistyles } from '../hooks/use-unistyles';
 
@@ -26,6 +28,28 @@ export const ThemeToggle: React.FC = () => {
         color={theme.colors.text.secondary}
       />
     </PressableHighlight>
+  );
+};
+
+export const GitHubRepo = () => {
+  const { styles, theme } = useStyles(stylesheet);
+
+  return (
+    <View
+      style={[
+        styles.container,
+        { justifyContent: 'center', alignItems: 'center' },
+      ]}>
+      <Link
+        href="https://github.com/enzomanuelmangano/motion.reactiive.io"
+        target="_blank">
+        <Ionicons
+          name="logo-github"
+          size={18}
+          color={theme.colors.text.secondary}
+        />
+      </Link>
+    </View>
   );
 };
 

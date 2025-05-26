@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
-import { ThemeToggle } from './components/theme-toggle';
+import { GitHubRepo, ThemeToggle } from './components/theme-toggle';
 
 const App = () => {
   const { styles, breakpoint } = useStyles(stylesheet);
@@ -73,6 +73,7 @@ const App = () => {
 
         {/* Theme toggle positioned at bottom right */}
         <View style={styles.themeToggleContainer}>
+          <GitHubRepo />
           <ThemeToggle />
         </View>
       </View>
@@ -145,6 +146,8 @@ const stylesheet = createStyleSheet(theme => ({
     bottom: theme.spacing.lg,
     right: theme.spacing.lg,
     zIndex: 1000,
+    gap: theme.spacing.sm,
+    flexDirection: 'row',
   },
 }));
 
