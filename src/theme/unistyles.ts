@@ -19,13 +19,11 @@ const lightColors = {
   primary: {
     spring: '#ffc558', // Spring/timing controls color
     bezier: '#14adff', // Bezier controls color
-    decay: '#ff5858', // Decay controls color
-    timing: '#58c4ff', // Timing controls color (alternative blue)
   },
 
   // Background Colors (inverted for light theme)
   background: {
-    primary: '#ffffff', // Main app background
+    primary: '#fafafa', // Main app background
     secondary: '#f8f9fa', // Canvas background
     overlay: 'rgba(0, 0, 0, 0.05)', // Controls overlay
     surface: 'rgba(0, 0, 0, 0.03)', // Tab container background

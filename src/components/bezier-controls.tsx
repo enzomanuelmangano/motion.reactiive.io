@@ -10,7 +10,6 @@ type BezierControlsProps = {
   x2: SharedValue<number>;
   y2: SharedValue<number>;
   duration: SharedValue<number>;
-  title?: string;
   color?: string;
 };
 
@@ -20,7 +19,6 @@ export const BezierControls: React.FC<BezierControlsProps> = ({
   x2,
   y2,
   duration,
-  title = 'Bezier Curve Configuration',
   color = '#14adff',
 }) => {
   const sliderConfigs: SliderConfig[] = useMemo(
@@ -84,5 +82,5 @@ export const BezierControls: React.FC<BezierControlsProps> = ({
     [sliderConfigs],
   );
 
-  return <Controls title={title} items={controlItems} />;
+  return <Controls items={controlItems} />;
 };

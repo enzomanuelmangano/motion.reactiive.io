@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import Animated, { Layout, FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
@@ -165,7 +169,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         key={activeTab}
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(150)}
-        layout={Layout.duration(300).dampingRatio(0.8)}>
+        layout={LinearTransition.dampingRatio(0.8)}>
         <Controls items={controlItems} />
       </Animated.View>
     </View>
@@ -181,9 +185,11 @@ const stylesheet = createStyleSheet(theme => ({
   tabContainer: {
     flexDirection: 'row',
     marginBottom: theme.spacing.md,
-    backgroundColor: theme.colors.background.surface,
+    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.xl,
     padding: theme.componentSpacing.padding.xs,
+    borderWidth: theme.strokeWidths.thin,
+    borderColor: theme.colors.border.primary,
   },
   tab: {
     flex: 1,

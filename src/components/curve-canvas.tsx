@@ -83,7 +83,6 @@ export const CurveCanvas = ({
         borderRadius: 12,
         borderWidth: theme.strokeWidths.thin,
         borderColor: theme.colors.border.primary,
-        ...theme.shadows.large,
       }}>
       <BezierCurve
         progress={bezierProgress}

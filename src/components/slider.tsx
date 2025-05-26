@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useRef, useCallback, useState, useEffect } from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -8,14 +8,7 @@ import Animated, {
 import type { SharedValue } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import type { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-
-import {
-  colors,
-  componentSpacing,
-  dimensions,
-  borderRadius,
-  shadows,
-} from '../theme';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 type SliderProps = {
   label: string;
@@ -37,13 +30,17 @@ export const Slider = ({
   value,
   min,
   max,
-  color = colors.primary.spring,
+  color,
   step,
   formatValue,
   unit,
 }: SliderProps) => {
+  const { styles, theme } = useStyles(stylesheet);
   const trackWidthRef = useRef(0);
   const [localValue, setLocalValue] = useState(value.value);
+
+  // Use theme color as default if no color is provided
+  const sliderColor = color || theme.colors.primary.spring;
 
   useEffect(() => {
     // Update shared value when local value changes
@@ -128,7 +125,7 @@ export const Slider = ({
 
       <PanGestureHandler
         onGestureEvent={gestureHandler}
-        hitSlop={componentSpacing.hitSlop}>
+        hitSlop={theme.componentSpacing.hitSlop}>
         <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
@@ -138,12 +135,16 @@ export const Slider = ({
             <Animated.View
               style={[
                 styles.progress,
-                { backgroundColor: color },
+                { backgroundColor: sliderColor },
                 progressStyle,
               ]}
             />
             <Animated.View
-              style={[styles.thumb, { backgroundColor: color }, thumbStyle]}
+              style={[
+                styles.thumb,
+                { backgroundColor: sliderColor },
+                thumbStyle,
+              ]}
             />
           </View>
         </Animated.View>
@@ -152,47 +153,47 @@ export const Slider = ({
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    marginVertical: componentSpacing.margin.sm,
+    marginVertical: theme.componentSpacing.margin.sm,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: componentSpacing.margin.sm,
+    marginBottom: theme.componentSpacing.margin.sm,
   },
   label: {
-    color: colors.text.primary,
+    color: theme.colors.text.primary,
     fontSize: 13,
     fontWeight: '500',
   },
   value: {
-    color: colors.text.primary,
+    color: theme.colors.text.primary,
     fontSize: 13,
-    opacity: 0.6,
+    opacity: theme.opacity.disabled,
     fontFamily: 'monospace',
   },
   gestureContainer: {
-    paddingVertical: componentSpacing.padding.md,
+    paddingVertical: theme.componentSpacing.padding.md,
   },
   track: {
-    height: dimensions.slider.trackHeight,
-    backgroundColor: colors.background.track,
-    borderRadius: borderRadius.xs,
+    height: theme.dimensions.slider.trackHeight,
+    backgroundColor: theme.colors.background.track,
+    borderRadius: theme.borderRadius.xs,
     overflow: 'visible',
     position: 'relative',
   },
   progress: {
     height: '100%',
-    borderRadius: borderRadius.xs,
+    borderRadius: theme.borderRadius.xs,
   },
   thumb: {
     position: 'absolute',
-    width: dimensions.slider.thumbSize,
-    height: dimensions.slider.thumbSize,
-    borderRadius: borderRadius.lg,
-    top: dimensions.slider.thumbOffset,
-    ...shadows.small,
+    width: theme.dimensions.slider.thumbSize,
+    height: theme.dimensions.slider.thumbSize,
+    borderRadius: theme.borderRadius.lg,
+    top: theme.dimensions.slider.thumbOffset,
+    ...theme.shadows.small,
   },
-});
+}));

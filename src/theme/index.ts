@@ -9,13 +9,11 @@ export const colors = {
   primary: {
     spring: '#ffc558', // Spring/timing controls color
     bezier: '#14adff', // Bezier controls color
-    decay: '#ff5858', // Decay controls color
-    timing: '#58c4ff', // Timing controls color (alternative blue)
   },
 
   // Background Colors
   background: {
-    primary: '#080808', // Main app background
+    primary: '#000000', // Main app background
     secondary: '#0a0a0a', // Canvas background
     overlay: 'rgba(17, 17, 17, 0.7)', // Controls overlay
     surface: 'rgba(255, 255, 255, 0.05)', // Tab container background

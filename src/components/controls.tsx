@@ -39,11 +39,10 @@ const stylesheet = createStyleSheet(theme => ({
     width: '100%',
     marginVertical: theme.componentSpacing.margin.sm,
     padding: theme.componentSpacing.padding.lg,
-    backgroundColor: theme.colors.background.overlay,
+    backgroundColor: theme.colors.background.secondary,
     borderRadius: 10,
     borderWidth: theme.strokeWidths.thin,
-    borderColor: theme.colors.border.secondary,
-    ...theme.shadows.small,
+    borderColor: theme.colors.border.primary,
   },
   controlsWrapper: {
     width: '100%',
