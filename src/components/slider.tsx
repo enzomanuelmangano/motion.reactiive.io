@@ -41,15 +41,15 @@ export const Slider = ({
 
   useEffect(() => {
     // Update shared value when local value changes
-    value.value = localValue;
+    value.set(localValue);
   }, [localValue, value]);
 
   useEffect(() => {
     // Update local value when shared value changes externally
-    if (value.value !== localValue) {
-      setLocalValue(value.value);
+    if (value.get() !== localValue) {
+      setLocalValue(value.get());
     }
-  }, [value.value, localValue]);
+  }, [value, localValue]);
 
   const getPercentage = (val: number) => ((val - min) / (max - min)) * 100;
 
@@ -101,9 +101,11 @@ export const Slider = ({
 
   const panGesture = Gesture.Pan()
     [isMobile ? 'onStart' : 'onBegin'](event => {
+      'worklet';
       runOnJS(updateValue)(event.x);
     })
     .onUpdate(event => {
+      'worklet';
       runOnJS(updateValue)(event.x);
     })
     .hitSlop({
@@ -241,6 +243,5 @@ const stylesheet = createStyleSheet(theme => ({
     margin: 0,
     height: 16,
     lineHeight: 16,
-    outline: 'none',
   },
 }));

@@ -3,6 +3,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -81,7 +82,11 @@ export const PressableHighlight = ({
       isHoveredSpringProgress.value = withSpring(0, ActiveSpringConfig);
     });
 
-  const gesture = Gesture.Tap().onTouchesUp(() => onPress?.());
+  const gesture = Gesture.Tap().onTouchesUp(() => {
+    if (onPress) {
+      runOnJS(onPress)();
+    }
+  });
 
   const composedGesture = Gesture.Simultaneous(hover, gesture);
 

@@ -15,6 +15,7 @@ import Animated, {
 import { useStyles } from 'react-native-unistyles';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Color from 'color';
+import { useCallback } from 'react';
 
 import { useUnistyles } from '../theme';
 
@@ -63,13 +64,13 @@ const useCanvasDimensions = () => {
 };
 
 const DarkColors = {
-  basePrimary: 'rgba(0,0,0,0.0)',
-  baseSecondary: 'rgba(0,0,0,0.03)',
+  basePrimary: 'rgba(0,0,0,0)',
+  baseSecondary: 'rgba(0,0,0,1)',
 };
 
 const LightColors = {
-  basePrimary: 'rgba(255,255,255,0.1)',
-  baseSecondary: 'rgba(255,255,255,0.0)',
+  basePrimary: 'rgba(255,255,255,0)',
+  baseSecondary: 'rgba(255,255,255,0.05)',
 };
 
 export const CurveCanvas = ({
@@ -87,7 +88,8 @@ export const CurveCanvas = ({
   const isHovered = useSharedValue(0);
   const isHoveredTiming = useSharedValue(0);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
+    'worklet';
     cancelAnimation(bezierProgress);
     bezierProgress.value = 0;
     bezierProgress.value = withTiming(1, {
@@ -107,7 +109,7 @@ export const CurveCanvas = ({
       damping: springParams.damping.value,
       stiffness: springParams.stiffness.value,
     });
-  };
+  }, [bezierParams, springParams, bezierProgress, springProgress]);
 
   useAnimatedReaction(
     () => {
@@ -137,9 +139,9 @@ export const CurveCanvas = ({
 
   const composedGesture = Gesture.Simultaneous(tapGesture, hoverGesture);
 
-  const basePrimary = isDark ? DarkColors.basePrimary : LightColors.basePrimary;
+  const basePrimary = isDark ? LightColors.basePrimary : DarkColors.basePrimary;
   const baseSecondary = isDark
-    ? DarkColors.baseSecondary
+    ? LightColors.baseSecondary
     : LightColors.baseSecondary;
 
   const baseBorder = theme.colors.border.primary;
