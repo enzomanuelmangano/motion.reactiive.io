@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, View, TextInput, Pressable } from 'react-native';
 import { useRef, useCallback, useState, useEffect } from 'react';
 import Animated, { useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
@@ -29,6 +29,9 @@ export const Slider = ({
   const { styles, theme } = useStyles(stylesheet);
   const trackWidthRef = useRef(0);
   const [localValue, setLocalValue] = useState(value.value);
+  const [isEditing, setIsEditing] = useState(false);
+  const [textInputValue, setTextInputValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   // Use theme color as default if no color is provided
   const sliderColor = color || theme.colors.primary.spring;
@@ -107,11 +110,48 @@ export const Slider = ({
       right: 10,
     });
 
+  const handleValuePress = () => {
+    setIsEditing(true);
+    setTextInputValue(localValue.toString());
+    // Focus the input after a short delay to ensure it's mounted
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleInputSubmit = () => {
+    const newValue = parseFloat(textInputValue);
+    if (!isNaN(newValue)) {
+      const clampedValue = Math.max(min, Math.min(max, newValue));
+      const finalValue = snapToStep(clampedValue);
+      setLocalValue(finalValue);
+    }
+    setIsEditing(false);
+  };
+
+  const handleInputBlur = () => {
+    handleInputSubmit();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
-        <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
+        {isEditing ? (
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            value={textInputValue}
+            onChangeText={setTextInputValue}
+            keyboardType="numeric"
+            onBlur={handleInputBlur}
+            onSubmitEditing={handleInputSubmit}
+            selectTextOnFocus
+            autoFocus
+          />
+        ) : (
+          <Pressable onPress={handleValuePress}>
+            <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
+          </Pressable>
+        )}
       </View>
 
       <GestureDetector gesture={panGesture}>
@@ -162,6 +202,8 @@ const stylesheet = createStyleSheet(theme => ({
     fontSize: 13,
     opacity: theme.opacity.disabled,
     fontFamily: 'monospace',
+    minWidth: 50,
+    textAlign: 'right',
   },
   gestureContainer: {
     paddingVertical: theme.spacing.md,
@@ -184,5 +226,18 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: theme.borderRadius.lg,
     top: theme.dimensions.slider.thumbOffset,
     ...theme.shadows.small,
+  },
+  input: {
+    color: theme.colors.text.primary,
+    fontSize: 13,
+    fontFamily: 'monospace',
+    minWidth: 50,
+    maxWidth: 80,
+    textAlign: 'right',
+    padding: 0,
+    margin: 0,
+    height: 16,
+    lineHeight: 16,
+    outline: 'none',
   },
 }));
