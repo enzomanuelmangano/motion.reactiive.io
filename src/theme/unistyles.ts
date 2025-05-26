@@ -86,7 +86,6 @@ const themes = {
   dark: {
     colors: theme.colors,
     spacing: theme.spacing,
-    componentSpacing: theme.componentSpacing,
     borderRadius: theme.borderRadius,
     dimensions: theme.dimensions,
     shadows: theme.shadows,
@@ -97,7 +96,6 @@ const themes = {
   light: {
     colors: lightColors,
     spacing: theme.spacing,
-    componentSpacing: theme.componentSpacing,
     borderRadius: theme.borderRadius,
     dimensions: theme.dimensions,
     shadows: lightShadows,

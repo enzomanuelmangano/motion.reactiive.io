@@ -58,48 +58,6 @@ export const spacing = {
   xxxxl: 60, // Extra extra extra extra large spacing
 } as const;
 
-// Component-specific spacing
-export const componentSpacing = {
-  // Padding values
-  padding: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 14,
-    xl: 20,
-  },
-
-  // Margin values
-  margin: {
-    xs: 1,
-    sm: 6,
-    md: 8,
-    lg: 12,
-    xl: 24,
-  },
-
-  // Gap values
-  gap: {
-    xs: 6,
-    sm: 8,
-    md: 24,
-  },
-
-  // Canvas specific
-  canvas: {
-    horizontalPadding: 30,
-    verticalPadding: 30,
-  },
-
-  // Hit slop for touch targets
-  hitSlop: {
-    top: 20,
-    bottom: 20,
-    left: 10,
-    right: 10,
-  },
-} as const;
-
 // Border radius values
 export const borderRadius = {
   xs: 1.5, // Slider track
@@ -200,7 +158,6 @@ export const animations = {
 export const theme = {
   colors,
   spacing,
-  componentSpacing,
   borderRadius,
   dimensions,
   shadows,

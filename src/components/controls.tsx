@@ -37,8 +37,8 @@ export const Controls: React.FC<ControlsProps> = ({
 const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    marginVertical: theme.componentSpacing.margin.sm,
-    padding: theme.componentSpacing.padding.lg,
+    marginVertical: theme.spacing.sm,
+    padding: theme.spacing.lg,
     backgroundColor: theme.colors.background.secondary,
     borderRadius: 10,
     borderWidth: theme.strokeWidths.thin,
@@ -48,6 +48,6 @@ const stylesheet = createStyleSheet(theme => ({
     width: '100%',
   },
   controlItem: {
-    marginVertical: theme.componentSpacing.margin.xs,
+    marginVertical: theme.spacing.xs,
   },
 }));

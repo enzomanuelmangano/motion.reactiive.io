@@ -9,6 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "tsc": "tsc --noEmit",
     "postinstall": "yarn setup-skia-web && node path-fs-canvaskit-postinstall.js"
   },
   "dependencies": {

@@ -125,7 +125,12 @@ export const Slider = ({
 
       <PanGestureHandler
         onGestureEvent={gestureHandler}
-        hitSlop={theme.componentSpacing.hitSlop}>
+        hitSlop={{
+          top: 20,
+          bottom: 20,
+          left: 10,
+          right: 10,
+        }}>
         <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
@@ -156,12 +161,12 @@ export const Slider = ({
 const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    marginVertical: theme.componentSpacing.margin.sm,
+    marginVertical: theme.spacing.sm,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.componentSpacing.margin.sm,
+    marginBottom: theme.spacing.sm,
   },
   label: {
     color: theme.colors.text.primary,
@@ -175,7 +180,7 @@ const stylesheet = createStyleSheet(theme => ({
     fontFamily: 'monospace',
   },
   gestureContainer: {
-    paddingVertical: theme.componentSpacing.padding.md,
+    paddingVertical: theme.spacing.md,
   },
   track: {
     height: theme.dimensions.slider.trackHeight,

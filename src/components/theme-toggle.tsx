@@ -26,7 +26,7 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: theme.borderRadius.md,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.secondary,
-    gap: theme.componentSpacing.gap.xs,
+    gap: theme.spacing.xs,
     ...theme.shadows.small,
   },
   icon: {

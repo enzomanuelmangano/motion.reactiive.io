@@ -35,12 +35,12 @@ const stylesheet = createStyleSheet(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: theme.spacing.md,
-    gap: theme.componentSpacing.gap.md,
+    gap: theme.spacing.md,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.componentSpacing.gap.xs,
+    gap: theme.spacing.xs,
   },
   colorDot: {
     width: theme.dimensions.colorDot.size,
