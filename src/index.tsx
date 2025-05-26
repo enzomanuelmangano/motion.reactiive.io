@@ -28,7 +28,7 @@ const App = () => {
     y1: useSharedValue(0.46),
     x2: useSharedValue(0.45),
     y2: useSharedValue(0.94),
-    duration: useSharedValue(2000),
+    duration: useSharedValue(1000),
   };
 
   return (

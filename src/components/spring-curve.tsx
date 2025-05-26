@@ -14,7 +14,6 @@ type SpringCurveProps = {
   verticalPadding?: number;
   progress: SharedValue<number>;
   strokeWidth?: number;
-  amplitude?: number; // New prop
 };
 
 export const SpringCurve = ({
@@ -28,7 +27,6 @@ export const SpringCurve = ({
   verticalPadding = 30,
   progress,
   strokeWidth = 4,
-  amplitude = 1, // Default to 1x amplitude
 }: SpringCurveProps) => {
   const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
@@ -40,8 +38,7 @@ export const SpringCurve = ({
 
     // Safety checks for invalid parameters
     if (m <= 0 || k <= 0 || c < 0 || width <= 0 || height <= 0) {
-      // Create a simple horizontal line as fallback
-      const y = height / 2;
+      const y = verticalPadding + (height - verticalPadding * 2);
       springPath.moveTo(horizontalPadding, y);
       springPath.lineTo(width - horizontalPadding, y);
       return springPath;
@@ -50,7 +47,9 @@ export const SpringCurve = ({
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
 
-    const centerY = height / 2;
+    // Define anchor points to match Bezier curve
+    const startX = horizontalPadding;
+    const startY = verticalPadding;
 
     const omega = Math.sqrt(k / m);
     const zeta = c / (2 * Math.sqrt(k * m));
@@ -69,18 +68,10 @@ export const SpringCurve = ({
     const initialDisplacement = (() => {
       if (zeta < 1) return 1;
       if (zeta === 1) return 1;
-      // For overdamped case, the initial displacement should be 1 (starting from rest)
-      // The formula (Math.exp(s1 * 0) - Math.exp(s2 * 0)) / (s1 - s2) = 0/something = 0
-      // which causes division by zero later. We need the coefficient for the initial condition.
-      // For overdamped: x(t) = A*exp(s1*t) + B*exp(s2*t)
-      // With initial conditions x(0) = 1, x'(0) = 0:
-      // A + B = 1 and A*s1 + B*s2 = 0
-      // Solving: A = -s2/(s1-s2), B = s1/(s1-s2)
-      // So x(0) = A + B = (-s2 + s1)/(s1-s2) = 1
       return 1;
     })();
 
-    let prevY = 0;
+    let prevY = startY;
 
     for (let i = 0; i <= steps; i++) {
       const t = i * dt;
@@ -93,9 +84,6 @@ export const SpringCurve = ({
       } else if (zeta === 1) {
         displacement = Math.exp(-omega * t) * (1 + omega * t);
       } else {
-        // Overdamped case: x(t) = A*exp(s1*t) + B*exp(s2*t)
-        // With initial conditions x(0) = 1, x'(0) = 0:
-        // A = -s2/(s1-s2), B = s1/(s1-s2)
         const A = -s2 / (s1 - s2);
         const B = s1 / (s1 - s2);
         displacement = A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
@@ -107,10 +95,12 @@ export const SpringCurve = ({
       }
 
       const normalized = displacement / initialDisplacement;
-      const scaledDisplacement = normalized * (drawableHeight / 2) * amplitude;
+      // Scale displacement to match Bezier curve's height
+      const scaledDisplacement = normalized * drawableHeight;
 
-      const x = horizontalPadding + (i / steps) * drawableWidth;
-      const y = centerY + scaledDisplacement;
+      const x = startX + (i / steps) * drawableWidth;
+      // Map displacement to match Bezier curve's coordinate system
+      const y = startY + scaledDisplacement;
 
       // Safety check for invalid coordinates
       if (!isFinite(x) || !isFinite(y)) {
@@ -121,7 +111,8 @@ export const SpringCurve = ({
         springPath.moveTo(x, y);
         prevY = y;
       } else {
-        const maxDelta = drawableHeight / 5;
+        // Limit the maximum change in y to prevent extreme oscillations
+        const maxDelta = drawableHeight * 0.2; // 20% of drawable height
         const delta = y - prevY;
         const clampedY = prevY + Math.max(-maxDelta, Math.min(maxDelta, delta));
 
@@ -139,7 +130,6 @@ export const SpringCurve = ({
     stiffness,
     horizontalPadding,
     verticalPadding,
-    amplitude,
   ]);
 
   const point = useAnimateThroughPath({ path, progress });
@@ -162,8 +152,6 @@ export const SpringCurve = ({
         strokeWidth={strokeWidth}
         color={color}
         strokeCap="round"
-        start={0}
-        end={1}
         opacity={0.5}
       />
     </Group>
