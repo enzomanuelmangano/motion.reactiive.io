@@ -13,9 +13,7 @@ import { CurveLegend } from './components/curve-legend';
 import { ThemeToggle } from './components/theme-toggle';
 
 const App = () => {
-  const { styles, breakpoint } = useStyles(stylesheet);
-  const isWideScreen =
-    breakpoint === 'lg' || breakpoint === 'xl' || breakpoint === 'superLarge';
+  const { styles } = useStyles(stylesheet);
 
   const springParams = {
     mass: useSharedValue(1.5),
@@ -36,8 +34,7 @@ const App = () => {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={styles.content}>
-          <View
-            style={[styles.mainContent, !isWideScreen && styles.stackedLayout]}>
+          <View style={styles.mainContent}>
             <View style={styles.canvasSection}>
               <CurveCanvas
                 springParams={springParams}
@@ -103,13 +100,6 @@ const stylesheet = createStyleSheet(theme => ({
       xs: theme.spacing.xl,
       lg: theme.spacing.xxxxl,
     },
-  },
-  stackedLayout: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: theme.spacing.sm,
-    paddingTop: theme.spacing.xl,
   },
   canvasSection: {
     width: theme.dimensions.canvas.maxWidth,

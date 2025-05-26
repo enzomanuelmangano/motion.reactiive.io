@@ -16,6 +16,8 @@ import { useStyles } from 'react-native-unistyles';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Color from 'color';
 
+import { useUnistyles } from '../theme';
+
 import { SpringCurve } from './spring-curve';
 import { BezierCurve } from './bezier-curve';
 
@@ -39,6 +41,7 @@ export const CurveCanvas = ({
   bezierParams,
 }: CurveCanvasProps) => {
   const { theme } = useStyles();
+  const { isDark } = useUnistyles();
   const { width } = useWindowDimensions();
   const canvasWidth = Math.min(width * 0.95, theme.dimensions.canvas.maxWidth);
   const canvasHeight = Math.min(
@@ -104,7 +107,9 @@ export const CurveCanvas = ({
   const baseSecondary = 'rgba(255,255,255,0.03)';
 
   const baseBorder = theme.colors.border.primary;
-  const baseBorderSecondary = Color(baseBorder).lighten(1).toString();
+  const baseBorderSecondary = Color(baseBorder)
+    [isDark ? 'lighten' : 'darken'](0.1)
+    .toString();
 
   const animatedStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
