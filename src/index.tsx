@@ -91,7 +91,7 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: theme.colors.background.primary,
   },
   scrollViewContent: {
-    paddingBottom: theme.spacing.xl,
+    paddingBottom: 120,
   },
   content: {
     flex: 1,
