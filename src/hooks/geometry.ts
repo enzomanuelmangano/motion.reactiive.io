@@ -5,7 +5,7 @@ export const createPathGeometry = (path: SkPath, resScale = 1) => {
   'worklet';
   const it = Skia.ContourMeasureIter(path, false, resScale);
   const contour: SkContourMeasure = it.next()!;
-  const totalLength = contour.length();
+  const totalLength = contour?.length?.() ?? 0;
 
   const getTotalLength = () => {
     'worklet';
