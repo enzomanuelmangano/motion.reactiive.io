@@ -1,7 +1,8 @@
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 // Initialize unistyles
 import './theme/unistyles';
@@ -11,8 +12,9 @@ import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
 
 const App = () => {
-  const { width } = useWindowDimensions();
-  const isWideScreen = width > 900;
+  const { styles, breakpoint } = useStyles(stylesheet);
+  const isWideScreen =
+    breakpoint === 'lg' || breakpoint === 'xl' || breakpoint === 'superLarge';
 
   const springParams = {
     mass: useSharedValue(2),
@@ -58,48 +60,63 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
-    backgroundColor: '#080808',
+    backgroundColor: theme.colors.background.primary,
   },
   content: {
     flex: 1,
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingTop: {
+      xs: theme.spacing.xxxl,
+      md: theme.spacing.xxxl,
+    },
+    paddingBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
     justifyContent: 'center',
   },
   mainContent: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: 8,
-    maxWidth: 1200,
+    flexDirection: {
+      xs: 'column',
+      lg: 'row',
+    },
+    alignItems: {
+      xs: 'center',
+      lg: 'flex-start',
+    },
+    justifyContent: {
+      xs: 'flex-start',
+      lg: 'center',
+    },
+    gap: theme.spacing.sm,
+    maxWidth: theme.dimensions.container.maxWidth.main,
     alignSelf: 'center',
     width: '100%',
-    paddingTop: 60,
+    paddingTop: {
+      xs: theme.spacing.xl,
+      lg: theme.spacing.xxxxl,
+    },
   },
   stackedLayout: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: 8,
-    paddingTop: 40,
+    gap: theme.spacing.sm,
+    paddingTop: theme.spacing.xl,
   },
   canvasSection: {
-    width: 400,
+    width: theme.dimensions.canvas.maxWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
   controlsSection: {
-    width: 380,
+    width: theme.dimensions.container.maxWidth.controls,
     flexShrink: 0,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-});
+}));
 
 // eslint-disable-next-line import/no-default-export
 export default App;

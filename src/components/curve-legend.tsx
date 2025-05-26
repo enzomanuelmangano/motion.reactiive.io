@@ -1,42 +1,55 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 export const CurveLegend = () => {
+  const { styles, theme } = useStyles(stylesheet);
+
   return (
     <View style={styles.container}>
       <View style={styles.legendItem}>
-        <View style={[styles.colorDot, { backgroundColor: '#ffc558' }]} />
+        <View
+          style={[
+            styles.colorDot,
+            { backgroundColor: theme.colors.primary.spring },
+          ]}
+        />
         <Text style={styles.legendText}>Spring Animation</Text>
       </View>
       <View style={styles.legendItem}>
-        <View style={[styles.colorDot, { backgroundColor: '#14adff' }]} />
+        <View
+          style={[
+            styles.colorDot,
+            { backgroundColor: theme.colors.primary.bezier },
+          ]}
+        />
         <Text style={styles.legendText}>Bezier Curve</Text>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
-    gap: 24,
+    marginTop: theme.spacing.md,
+    gap: theme.componentSpacing.gap.md,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: theme.componentSpacing.gap.xs,
   },
   colorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: theme.dimensions.colorDot.size,
+    height: theme.dimensions.colorDot.size,
+    borderRadius: theme.dimensions.colorDot.size / 2,
   },
   legendText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 12,
     opacity: 0.7,
   },
-});
+}));

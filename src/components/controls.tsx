@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ViewStyle } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 export type ControlItem = {
   id: string;
@@ -18,6 +19,8 @@ export const Controls: React.FC<ControlsProps> = ({
   style,
   containerStyle,
 }) => {
+  const { styles } = useStyles(stylesheet);
+
   return (
     <View style={[styles.container, containerStyle]}>
       <View style={[styles.controlsWrapper, style]}>
@@ -31,25 +34,21 @@ export const Controls: React.FC<ControlsProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    marginVertical: 8,
-    padding: 14,
-    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    marginVertical: theme.componentSpacing.margin.sm,
+    padding: theme.componentSpacing.padding.lg,
+    backgroundColor: theme.colors.background.overlay,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: theme.strokeWidths.thin,
+    borderColor: theme.colors.border.secondary,
+    ...theme.shadows.small,
   },
   controlsWrapper: {
     width: '100%',
   },
   controlItem: {
-    marginVertical: 1,
+    marginVertical: theme.componentSpacing.margin.xs,
   },
-});
+}));

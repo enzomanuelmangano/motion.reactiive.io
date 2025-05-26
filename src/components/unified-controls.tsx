@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { Layout, FadeIn, FadeOut } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 import { Controls } from './controls';
 import { createSliderControls, type SliderConfig } from './control-utils';
@@ -25,6 +26,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
   springParams,
   bezierParams,
 }) => {
+  const { styles, theme } = useStyles(stylesheet);
   const [activeTab, setActiveTab] = useState<'spring' | 'bezier'>('spring');
 
   const springSliderConfigs: SliderConfig[] = useMemo(
@@ -36,7 +38,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 0.1,
         max: 10,
         step: 0.1,
-        color: '#ffc558',
+        color: theme.colors.primary.spring,
         formatValue: (value: number) => value.toFixed(1),
       },
       {
@@ -46,7 +48,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 1,
         max: 100,
         step: 1,
-        color: '#ffc558',
+        color: theme.colors.primary.spring,
       },
       {
         id: 'stiffness',
@@ -55,10 +57,10 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 1,
         max: 1000,
         step: 1,
-        color: '#ffc558',
+        color: theme.colors.primary.spring,
       },
     ],
-    [springParams],
+    [springParams, theme.colors.primary.spring],
   );
 
   const bezierSliderConfigs: SliderConfig[] = useMemo(
@@ -70,7 +72,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 0,
         max: 1,
         step: 0.01,
-        color: '#14adff',
+        color: theme.colors.primary.bezier,
         formatValue: (value: number) => value.toFixed(2),
       },
       {
@@ -80,7 +82,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 0,
         max: 1,
         step: 0.01,
-        color: '#14adff',
+        color: theme.colors.primary.bezier,
         formatValue: (value: number) => value.toFixed(2),
       },
       {
@@ -90,7 +92,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 0,
         max: 1,
         step: 0.01,
-        color: '#14adff',
+        color: theme.colors.primary.bezier,
         formatValue: (value: number) => value.toFixed(2),
       },
       {
@@ -100,7 +102,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         min: 0,
         max: 1,
         step: 0.01,
-        color: '#14adff',
+        color: theme.colors.primary.bezier,
         formatValue: (value: number) => value.toFixed(2),
       },
       {
@@ -111,10 +113,10 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         max: 3000,
         step: 50,
         unit: 'ms',
-        color: '#14adff',
+        color: theme.colors.primary.bezier,
       },
     ],
-    [bezierParams],
+    [bezierParams, theme.colors.primary.bezier],
   );
 
   const activeConfigs =
@@ -133,35 +135,27 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[
-            styles.tab,
-            activeTab === 'spring' && {
-              backgroundColor: 'rgba(255, 197, 88, 0.1)',
-              borderWidth: 1,
-              borderColor: 'rgba(255, 197, 88, 0.3)',
-            },
-          ]}
+          style={[styles.tab, activeTab === 'spring' && styles.springTabActive]}
           onPress={() => handleTabSwitch('spring')}>
-          <View style={[styles.tabDot, { backgroundColor: '#ffc558' }]} />
+          <View style={[styles.tabDot, styles.springDot]} />
           <Text
-            style={[styles.tabText, activeTab === 'spring' && { opacity: 1 }]}>
+            style={[
+              styles.tabText,
+              activeTab === 'spring' && styles.tabTextActive,
+            ]}>
             Spring
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.tab,
-            activeTab === 'bezier' && {
-              backgroundColor: 'rgba(20, 173, 255, 0.1)',
-              borderWidth: 1,
-              borderColor: 'rgba(20, 173, 255, 0.3)',
-            },
-          ]}
+          style={[styles.tab, activeTab === 'bezier' && styles.bezierTabActive]}
           onPress={() => handleTabSwitch('bezier')}>
-          <View style={[styles.tabDot, { backgroundColor: '#14adff' }]} />
+          <View style={[styles.tabDot, styles.bezierDot]} />
           <Text
-            style={[styles.tabText, activeTab === 'bezier' && { opacity: 1 }]}>
+            style={[
+              styles.tabText,
+              activeTab === 'bezier' && styles.tabTextActive,
+            ]}>
             Bezier
           </Text>
         </TouchableOpacity>
@@ -178,39 +172,57 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    maxWidth: 380,
-    minHeight: 300,
+    maxWidth: theme.dimensions.container.maxWidth.controls,
+    minHeight: theme.dimensions.container.minHeight.controls,
   },
   tabContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-    padding: 4,
+    marginBottom: theme.spacing.md,
+    backgroundColor: theme.colors.background.surface,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.componentSpacing.padding.xs,
   },
   tab: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    gap: 6,
+    paddingVertical: theme.componentSpacing.padding.sm,
+    paddingHorizontal: theme.componentSpacing.padding.md,
+    borderRadius: theme.borderRadius.md,
+    gap: theme.componentSpacing.gap.xs,
   },
-
+  springTabActive: {
+    backgroundColor: theme.colors.state.springActive,
+    borderWidth: theme.strokeWidths.thin,
+    borderColor: theme.colors.state.springBorder,
+  },
+  bezierTabActive: {
+    backgroundColor: theme.colors.state.bezierActive,
+    borderWidth: theme.strokeWidths.thin,
+    borderColor: theme.colors.state.bezierBorder,
+  },
   tabDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: theme.dimensions.tabDot.size,
+    height: theme.dimensions.tabDot.size,
+    borderRadius: theme.dimensions.tabDot.borderRadius,
+  },
+  springDot: {
+    backgroundColor: theme.colors.primary.spring,
+  },
+  bezierDot: {
+    backgroundColor: theme.colors.primary.bezier,
   },
   tabText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 13,
     fontWeight: '500',
-    opacity: 0.6,
+    opacity: theme.opacity.disabled,
   },
-});
+  tabTextActive: {
+    opacity: 1,
+  },
+}));

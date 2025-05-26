@@ -9,6 +9,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useStyles } from 'react-native-unistyles';
 
 import { SpringCurve } from './spring-curve';
 import { BezierCurve } from './bezier-curve';
@@ -32,9 +33,13 @@ export const CurveCanvas = ({
   springParams,
   bezierParams,
 }: CurveCanvasProps) => {
+  const { theme } = useStyles();
   const { width } = useWindowDimensions();
-  const canvasWidth = Math.min(width * 0.95, 400);
-  const canvasHeight = Math.min((canvasWidth / 4) * 3, 280);
+  const canvasWidth = Math.min(width * 0.95, theme.dimensions.canvas.maxWidth);
+  const canvasHeight = Math.min(
+    (canvasWidth / 4) * 3,
+    theme.dimensions.canvas.maxHeight,
+  );
 
   const bezierProgress = useSharedValue(0);
   const springProgress = useSharedValue(0);
@@ -74,15 +79,11 @@ export const CurveCanvas = ({
       style={{
         width: canvasWidth,
         height: canvasHeight,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: theme.colors.background.secondary,
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#202020ff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 8,
+        borderWidth: theme.strokeWidths.thin,
+        borderColor: theme.colors.border.primary,
+        ...theme.shadows.large,
       }}>
       <BezierCurve
         progress={bezierProgress}
@@ -92,10 +93,10 @@ export const CurveCanvas = ({
         y1={bezierParams.y1}
         x2={bezierParams.x2}
         y2={bezierParams.y2}
-        color="#14adff"
-        strokeWidth={2}
-        horizontalPadding={30}
-        verticalPadding={30}
+        color={theme.colors.primary.bezier}
+        strokeWidth={theme.strokeWidths.medium}
+        horizontalPadding={theme.componentSpacing.canvas.horizontalPadding}
+        verticalPadding={theme.componentSpacing.canvas.verticalPadding}
       />
       <SpringCurve
         progress={springProgress}
@@ -104,10 +105,10 @@ export const CurveCanvas = ({
         mass={springParams.mass}
         damping={springParams.damping}
         stiffness={springParams.stiffness}
-        horizontalPadding={30}
-        verticalPadding={30}
-        color="#ffc558"
-        strokeWidth={2}
+        horizontalPadding={theme.componentSpacing.canvas.horizontalPadding}
+        verticalPadding={theme.componentSpacing.canvas.verticalPadding}
+        color={theme.colors.primary.spring}
+        strokeWidth={theme.strokeWidths.medium}
       />
     </Canvas>
   );
