@@ -1,7 +1,7 @@
 import React from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { SpringSlider } from './spring-slider';
+import { Slider } from './slider';
 import type { ControlItem } from './controls';
 
 export type SliderConfig = {
@@ -11,17 +11,23 @@ export type SliderConfig = {
   min: number;
   max: number;
   color?: string;
+  step?: number;
+  formatValue?: (value: number) => string;
+  unit?: string;
 };
 
 export const createSliderControl = (config: SliderConfig): ControlItem => ({
   id: config.id,
   component: (
-    <SpringSlider
+    <Slider
       label={config.label}
       value={config.value}
       min={config.min}
       max={config.max}
       color={config.color}
+      step={config.step}
+      formatValue={config.formatValue}
+      unit={config.unit}
     />
   ),
 });
