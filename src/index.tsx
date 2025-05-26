@@ -3,6 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+// Initialize unistyles
+import './theme/unistyles';
+
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';

@@ -210,3 +210,7 @@ export const theme = {
   opacity,
   animations,
 } as const;
+
+// Re-export unistyles utilities for convenience
+export { useUnistyles } from '../hooks/use-unistyles';
+export { createStyleSheet } from 'react-native-unistyles';
