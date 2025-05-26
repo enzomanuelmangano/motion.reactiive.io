@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ViewStyle } from 'react-native';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export type ControlItem = {
   id: string;
@@ -8,21 +8,18 @@ export type ControlItem = {
 };
 
 type ControlsProps = {
-  title?: string;
   items: ControlItem[];
   style?: ViewStyle;
   containerStyle?: ViewStyle;
 };
 
 export const Controls: React.FC<ControlsProps> = ({
-  title,
   items,
   style,
   containerStyle,
 }) => {
   return (
     <View style={[styles.container, containerStyle]}>
-      {title && <Text style={styles.title}>{title}</Text>}
       <View style={[styles.controlsWrapper, style]}>
         {items.map(item => (
           <View key={item.id} style={styles.controlItem}>
@@ -48,14 +45,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-    textAlign: 'center',
-    opacity: 0.8,
   },
   controlsWrapper: {
     width: '100%',

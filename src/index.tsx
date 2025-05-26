@@ -40,11 +40,13 @@ const App = () => {
               <CurveLegend />
             </View>
 
-            <View style={styles.controlsSection}>
-              <UnifiedControls
-                springParams={springParams}
-                bezierParams={bezierParams}
-              />
+            <View>
+              <View style={styles.controlsSection}>
+                <UnifiedControls
+                  springParams={springParams}
+                  bezierParams={bezierParams}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -68,18 +70,20 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     gap: 8,
     maxWidth: 1200,
     alignSelf: 'center',
     width: '100%',
+    paddingTop: 60,
   },
   stackedLayout: {
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: 8,
+    paddingTop: 40,
   },
   canvasSection: {
     width: 400,
@@ -89,7 +93,8 @@ const styles = StyleSheet.create({
   controlsSection: {
     width: 380,
     flexShrink: 0,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 });
 

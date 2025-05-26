@@ -172,12 +172,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(150)}
         layout={Layout.duration(300).dampingRatio(0.8)}>
-        <Controls
-          title={`${
-            activeTab === 'spring' ? 'Spring' : 'Bezier'
-          } Configuration`}
-          items={controlItems}
-        />
+        <Controls items={controlItems} />
       </Animated.View>
     </View>
   );
@@ -187,6 +182,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     maxWidth: 380,
+    minHeight: 300,
   },
   tabContainer: {
     flexDirection: 'row',

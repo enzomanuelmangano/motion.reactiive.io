@@ -16,7 +16,6 @@ export const SpringControls: React.FC<SpringControlsProps> = ({
   mass,
   damping,
   stiffness,
-  title = 'Spring Configuration',
   color = '#ffc558',
 }) => {
   const sliderConfigs: SliderConfig[] = useMemo(
@@ -54,5 +53,5 @@ export const SpringControls: React.FC<SpringControlsProps> = ({
     [sliderConfigs],
   );
 
-  return <Controls title={title} items={controlItems} />;
+  return <Controls items={controlItems} />;
 };
