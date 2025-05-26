@@ -13,7 +13,7 @@ import { CurveLegend } from './components/curve-legend';
 import { ThemeToggle } from './components/theme-toggle';
 
 const App = () => {
-  const { styles } = useStyles(stylesheet);
+  const { styles, breakpoint } = useStyles(stylesheet);
 
   const springParams = {
     mass: useSharedValue(1.5),
@@ -29,6 +29,8 @@ const App = () => {
     duration: useSharedValue(1000),
   };
 
+  const showLegend = breakpoint !== 'xs';
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -40,7 +42,7 @@ const App = () => {
                 springParams={springParams}
                 bezierParams={bezierParams}
               />
-              <CurveLegend />
+              {showLegend && <CurveLegend />}
             </View>
 
             <View>
@@ -102,7 +104,11 @@ const stylesheet = createStyleSheet(theme => ({
     },
   },
   canvasSection: {
-    width: theme.dimensions.canvas.maxWidth,
+    width: {
+      xs: '100%',
+      sm: theme.dimensions.canvas.maxWidth,
+    },
+    maxWidth: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },

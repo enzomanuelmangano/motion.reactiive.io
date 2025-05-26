@@ -42,10 +42,16 @@ export const CurveCanvas = ({
 }: CurveCanvasProps) => {
   const { theme } = useStyles();
   const { isDark } = useUnistyles();
-  const { width } = useWindowDimensions();
-  const canvasWidth = Math.min(width * 0.95, theme.dimensions.canvas.maxWidth);
+  const { width: windowWidth } = useWindowDimensions();
+
+  // Calculate responsive dimensions
+  const canvasWidth = Math.min(
+    windowWidth - theme.spacing.lg * 2,
+    theme.dimensions.canvas.maxWidth,
+  );
+  const { aspectRatio } = theme.dimensions.canvas;
   const canvasHeight = Math.min(
-    (canvasWidth / 4) * 3,
+    canvasWidth / aspectRatio,
     theme.dimensions.canvas.maxHeight,
   );
 
