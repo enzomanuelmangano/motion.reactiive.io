@@ -18,17 +18,17 @@ const App = () => {
     breakpoint === 'lg' || breakpoint === 'xl' || breakpoint === 'superLarge';
 
   const springParams = {
-    mass: useSharedValue(2),
-    damping: useSharedValue(20),
-    stiffness: useSharedValue(150),
+    mass: useSharedValue(1.5),
+    damping: useSharedValue(17),
+    stiffness: useSharedValue(46),
   };
 
   const bezierParams = {
-    x1: useSharedValue(0.5),
-    y1: useSharedValue(0),
-    x2: useSharedValue(0.5),
-    y2: useSharedValue(1),
-    duration: useSharedValue(1000),
+    x1: useSharedValue(0.25),
+    y1: useSharedValue(0.46),
+    x2: useSharedValue(0.45),
+    y2: useSharedValue(0.94),
+    duration: useSharedValue(2000),
   };
 
   return (

@@ -18,6 +18,20 @@ type BezierCurveProps = {
   progress: SharedValue<number>;
 };
 
+// Helper function to clamp a value between min and max
+const clamp = (value: number, min: number, max: number) => {
+  return Math.max(min, Math.min(max, value));
+};
+
+// Helper function to ensure control points are within reasonable bounds
+const constrainControlPoint = (
+  value: number,
+  anchor: number,
+  maxDistance: number,
+) => {
+  return clamp(value, anchor - maxDistance, anchor + maxDistance);
+};
+
 export const BezierCurve = ({
   width,
   height,
@@ -36,43 +50,61 @@ export const BezierCurve = ({
 
     // Safety checks for invalid dimensions
     if (width <= 0 || height <= 0) {
-      // Create a simple horizontal line as fallback
       const y = height > 0 ? height / 2 : 0;
       bezierPath.moveTo(0, y);
       bezierPath.lineTo(width > 0 ? width : 100, y);
       return bezierPath;
     }
 
-    // Add padding
+    // Calculate drawable area
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
 
-    // Start point (left edge with padding)
+    // Define anchor points
     const startX = horizontalPadding;
     const startY = verticalPadding + drawableHeight;
-
-    // End point (right edge with padding)
     const endX = width - horizontalPadding;
     const endY = verticalPadding;
 
-    // Control points (normalized coordinates to actual canvas coordinates)
-    const cp1x = x1.value * drawableWidth;
-    const cp1y = verticalPadding + y1.value * drawableHeight;
+    // Calculate maximum allowed distance for control points
+    // This ensures the curve stays within reasonable bounds
+    const maxControlDistance = drawableWidth * 0.5;
 
-    const cp2x = horizontalPadding + x2.value * drawableWidth;
-    const cp2y = verticalPadding + y2.value * drawableHeight;
+    // Map normalized control points to actual coordinates
+    // First control point is relative to start point
+    const cp1x = constrainControlPoint(
+      startX + x1.value * drawableWidth,
+      startX,
+      maxControlDistance,
+    );
+    const cp1y = constrainControlPoint(
+      startY - y1.value * drawableHeight,
+      startY,
+      maxControlDistance,
+    );
+
+    // Second control point is relative to end point
+    const cp2x = constrainControlPoint(
+      endX - (1 - x2.value) * drawableWidth,
+      endX,
+      maxControlDistance,
+    );
+    const cp2y = constrainControlPoint(
+      endY + (1 - y2.value) * drawableHeight,
+      endY,
+      maxControlDistance,
+    );
 
     // Safety check for invalid coordinates
     const coords = [startX, startY, cp1x, cp1y, cp2x, cp2y, endX, endY];
     if (coords.some(coord => !isFinite(coord))) {
-      // Create a simple horizontal line as fallback
       const y = height / 2;
       bezierPath.moveTo(horizontalPadding, y);
       bezierPath.lineTo(width - horizontalPadding, y);
       return bezierPath;
     }
 
-    // Create cubic Bezier curve
+    // Create cubic Bezier curve with constrained control points
     bezierPath.moveTo(startX, startY);
     bezierPath.cubicTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
 
