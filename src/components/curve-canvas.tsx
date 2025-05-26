@@ -1,4 +1,4 @@
-import { Canvas } from '@shopify/react-native-skia';
+import Touchable from 'react-native-skia-gesture';
 import { useWindowDimensions } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
@@ -10,7 +10,6 @@ import Animated, {
   withTiming,
   interpolateColor,
   useAnimatedStyle,
-  interpolate,
 } from 'react-native-reanimated';
 import { useStyles } from 'react-native-unistyles';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -70,7 +69,7 @@ const DarkColors = {
 
 const LightColors = {
   basePrimary: 'rgba(255,255,255,0)',
-  baseSecondary: 'rgba(255,255,255,0.05)',
+  baseSecondary: 'rgba(255,255,255,0.04)',
 };
 
 export const CurveCanvas = ({
@@ -170,12 +169,6 @@ export const CurveCanvas = ({
     };
   });
 
-  const rCanvasStyle = useAnimatedStyle(() => {
-    return {
-      flex: 1,
-      transform: [{ scale: interpolate(isHovered.value, [0, 1], [1, 0.9]) }],
-    };
-  });
   return (
     <GestureDetector gesture={composedGesture}>
       <Animated.View
@@ -185,8 +178,8 @@ export const CurveCanvas = ({
             cursor: 'pointer',
           },
         ]}>
-        <Animated.View style={rCanvasStyle}>
-          <Canvas style={{ flex: 1 }}>
+        <Animated.View style={{ flex: 1 }}>
+          <Touchable.Canvas style={{ flex: 1 }}>
             <BezierCurve
               progress={bezierProgress}
               width={canvasWidth}
@@ -199,6 +192,17 @@ export const CurveCanvas = ({
               strokeWidth={theme.strokeWidths.medium}
               horizontalPadding={theme.spacing.xxl}
               verticalPadding={theme.spacing.xxl}
+              onControlPointChange={(controlPoint, x, y) => {
+                'worklet';
+                // Convert pixel coordinates back to normalized values (0-1)
+                if (controlPoint === 'first') {
+                  bezierParams.x1.value = x;
+                  bezierParams.y1.value = y;
+                } else {
+                  bezierParams.x2.value = x;
+                  bezierParams.y2.value = y;
+                }
+              }}
             />
             <SpringCurve
               progress={springProgress}
@@ -212,7 +216,7 @@ export const CurveCanvas = ({
               color={theme.colors.primary.spring}
               strokeWidth={theme.strokeWidths.medium}
             />
-          </Canvas>
+          </Touchable.Canvas>
         </Animated.View>
       </Animated.View>
     </GestureDetector>

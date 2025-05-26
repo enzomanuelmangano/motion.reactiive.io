@@ -1,6 +1,11 @@
-import { Path, Skia, Group, Circle } from '@shopify/react-native-skia';
-import React from 'react';
-import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import { Path, Skia, Group, Circle, Line } from '@shopify/react-native-skia';
+import React, { useMemo } from 'react';
+import {
+  clamp,
+  useDerivedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
+import Touchable from 'react-native-skia-gesture';
 
 import { useAnimateThroughPath } from '../hooks/use-animate-through-path';
 
@@ -16,20 +21,11 @@ type BezierCurveProps = {
   horizontalPadding?: number;
   verticalPadding?: number;
   progress: SharedValue<number>;
-};
-
-// Helper function to clamp a value between min and max
-const clamp = (value: number, min: number, max: number) => {
-  return Math.max(min, Math.min(max, value));
-};
-
-// Helper function to ensure control points are within reasonable bounds
-const constrainControlPoint = (
-  value: number,
-  anchor: number,
-  maxDistance: number,
-) => {
-  return clamp(value, anchor - maxDistance, anchor + maxDistance);
+  onControlPointChange?: (
+    controlPoint: 'first' | 'second',
+    x: number,
+    y: number,
+  ) => void;
 };
 
 export const BezierCurve = ({
@@ -44,7 +40,62 @@ export const BezierCurve = ({
   horizontalPadding = 30,
   verticalPadding = 30,
   progress,
+  onControlPointChange,
 }: BezierCurveProps) => {
+  const { drawableWidth, drawableHeight, startX, startY, endX, endY } =
+    useMemo(() => {
+      const _drawableWidth = width - horizontalPadding * 2;
+      const _drawableHeight = height - verticalPadding * 2;
+
+      // Define anchor points
+      const _startX = horizontalPadding;
+      const _startY = verticalPadding + _drawableHeight;
+      const _endX = width - horizontalPadding;
+      const _endY = verticalPadding;
+
+      const _maxControlDistance = _drawableWidth * 0.5;
+
+      return {
+        drawableWidth: _drawableWidth,
+        drawableHeight: _drawableHeight,
+        startX: _startX,
+        startY: _startY,
+        endX: _endX,
+        endY: _endY,
+        maxControlDistance: _maxControlDistance,
+      };
+    }, [width, height, horizontalPadding, verticalPadding]);
+
+  const cp1x = useDerivedValue(() => {
+    return startX + x1.value * drawableWidth;
+  });
+
+  const cp1y = useDerivedValue(() => {
+    return startY - y1.value * drawableHeight;
+  });
+
+  const cp2x = useDerivedValue(() => {
+    return endX - (1 - x2.value) * drawableWidth;
+  });
+
+  const cp2y = useDerivedValue(() => {
+    return endY + (1 - y2.value) * drawableHeight;
+  });
+
+  const firstControlPoint = useDerivedValue(() => {
+    return {
+      x: cp1x.value,
+      y: cp1y.value,
+    };
+  });
+
+  const secondControlPoint = useDerivedValue(() => {
+    return {
+      x: cp2x.value,
+      y: cp2y.value,
+    };
+  });
+
   const path = useDerivedValue(() => {
     const bezierPath = Skia.Path.Make();
 
@@ -56,47 +107,18 @@ export const BezierCurve = ({
       return bezierPath;
     }
 
-    // Calculate drawable area
-    const drawableWidth = width - horizontalPadding * 2;
-    const drawableHeight = height - verticalPadding * 2;
-
-    // Define anchor points
-    const startX = horizontalPadding;
-    const startY = verticalPadding + drawableHeight;
-    const endX = width - horizontalPadding;
-    const endY = verticalPadding;
-
-    // Calculate maximum allowed distance for control points
-    // This ensures the curve stays within reasonable bounds
-    const maxControlDistance = drawableWidth * 0.5;
-
-    // Map normalized control points to actual coordinates
-    // First control point is relative to start point
-    const cp1x = constrainControlPoint(
-      startX + x1.value * drawableWidth,
-      startX,
-      maxControlDistance,
-    );
-    const cp1y = constrainControlPoint(
-      startY - y1.value * drawableHeight,
-      startY,
-      maxControlDistance,
-    );
-
-    // Second control point is relative to end point
-    const cp2x = constrainControlPoint(
-      endX - (1 - x2.value) * drawableWidth,
-      endX,
-      maxControlDistance,
-    );
-    const cp2y = constrainControlPoint(
-      endY + (1 - y2.value) * drawableHeight,
-      endY,
-      maxControlDistance,
-    );
-
     // Safety check for invalid coordinates
-    const coords = [startX, startY, cp1x, cp1y, cp2x, cp2y, endX, endY];
+    const coords = [
+      startX,
+      startY,
+      cp1x.value,
+      cp1y.value,
+      cp2x.value,
+      cp2y.value,
+      endX,
+      endY,
+    ];
+
     if (coords.some(coord => !isFinite(coord))) {
       const y = height / 2;
       bezierPath.moveTo(horizontalPadding, y);
@@ -106,12 +128,41 @@ export const BezierCurve = ({
 
     // Create cubic Bezier curve with constrained control points
     bezierPath.moveTo(startX, startY);
-    bezierPath.cubicTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
+    bezierPath.cubicTo(
+      cp1x.value,
+      cp1y.value,
+      cp2x.value,
+      cp2y.value,
+      endX,
+      endY,
+    );
 
     return bezierPath;
   }, [width, height, x1, y1, x2, y2, horizontalPadding, verticalPadding]);
 
   const point = useAnimateThroughPath({ path, progress });
+
+  const onUpdateControlPoint = (
+    controlPoint: 'first' | 'second',
+    x: number,
+    y: number,
+  ) => {
+    // Remap from absolute coordinates to normalized 0-1 range
+    const _x = clamp((x - horizontalPadding) / drawableWidth, 0, 1);
+    const _y = clamp((startY - y) / drawableHeight, 0, 1);
+
+    // Update the original SharedValues, not the derived ones
+    if (controlPoint === 'first') {
+      x1.value = _x;
+      y1.value = _y;
+    } else {
+      x2.value = _x;
+      y2.value = _y;
+    }
+
+    // Also call the callback if provided
+    onControlPointChange?.(controlPoint, _x, _y);
+  };
 
   return (
     <Group>
@@ -132,6 +183,52 @@ export const BezierCurve = ({
         color={color}
         strokeCap="round"
         opacity={0.5}
+      />
+      <Line
+        p1={{ x: startX, y: startY }}
+        p2={firstControlPoint}
+        color={color}
+        strokeWidth={strokeWidth}
+        style="stroke"
+        opacity={0.2}
+      />
+      <Line
+        p1={{ x: endX, y: endY }}
+        p2={secondControlPoint}
+        color={color}
+        strokeWidth={strokeWidth}
+        style="stroke"
+        opacity={0.2}
+      />
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
+      <Touchable.Circle
+        cx={cp1x}
+        cy={cp1y}
+        r={strokeWidth * 2}
+        color={color}
+        opacity={0.35}
+        onStart={touchInfo => {
+          onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
+        }}
+        onActive={touchInfo => {
+          onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
+        }}
+      />
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
+      <Touchable.Circle
+        cx={cp2x}
+        cy={cp2y}
+        r={strokeWidth * 2}
+        color={color}
+        opacity={0.35}
+        onStart={touchInfo => {
+          onUpdateControlPoint?.('second', touchInfo.x, touchInfo.y);
+        }}
+        onActive={touchInfo => {
+          onUpdateControlPoint?.('second', touchInfo.x, touchInfo.y);
+        }}
       />
     </Group>
   );

@@ -1,6 +1,10 @@
 import { Text, View, TextInput, Pressable } from 'react-native';
 import { useRef, useCallback, useState, useEffect } from 'react';
-import Animated, { useAnimatedStyle, runOnJS } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  runOnJS,
+  useAnimatedReaction,
+} from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -44,12 +48,16 @@ export const Slider = ({
     value.set(localValue);
   }, [localValue, value]);
 
-  useEffect(() => {
-    // Update local value when shared value changes externally
-    if (value.get() !== localValue) {
-      setLocalValue(value.get());
-    }
-  }, [value, localValue]);
+  // Use useAnimatedReaction to listen for SharedValue changes
+  useAnimatedReaction(
+    () => value.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue && currentValue !== localValue) {
+        runOnJS(setLocalValue)(currentValue);
+      }
+    },
+    [localValue],
+  );
 
   const getPercentage = (val: number) => ((val - min) / (max - min)) * 100;
 
