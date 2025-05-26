@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import Animated, { Layout, FadeIn, FadeOut } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 
 import { Controls } from './controls';
@@ -123,24 +124,27 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
     [activeConfigs],
   );
 
+  const handleTabSwitch = (tab: 'spring' | 'bezier') => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[
             styles.tab,
-            activeTab === 'spring' && styles.activeTab,
             activeTab === 'spring' && {
               backgroundColor: 'rgba(255, 197, 88, 0.1)',
+              borderWidth: 1,
+              borderColor: 'rgba(255, 197, 88, 0.3)',
             },
           ]}
-          onPress={() => setActiveTab('spring')}>
+          onPress={() => handleTabSwitch('spring')}>
           <View style={[styles.tabDot, { backgroundColor: '#ffc558' }]} />
           <Text
-            style={[
-              styles.tabText,
-              activeTab === 'spring' && styles.activeTabText,
-            ]}>
+            style={[styles.tabText, activeTab === 'spring' && { opacity: 1 }]}>
             Spring
           </Text>
         </TouchableOpacity>
@@ -148,27 +152,33 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         <TouchableOpacity
           style={[
             styles.tab,
-            activeTab === 'bezier' && styles.activeTab,
             activeTab === 'bezier' && {
               backgroundColor: 'rgba(20, 173, 255, 0.1)',
+              borderWidth: 1,
+              borderColor: 'rgba(20, 173, 255, 0.3)',
             },
           ]}
-          onPress={() => setActiveTab('bezier')}>
+          onPress={() => handleTabSwitch('bezier')}>
           <View style={[styles.tabDot, { backgroundColor: '#14adff' }]} />
           <Text
-            style={[
-              styles.tabText,
-              activeTab === 'bezier' && styles.activeTabText,
-            ]}>
+            style={[styles.tabText, activeTab === 'bezier' && { opacity: 1 }]}>
             Bezier
           </Text>
         </TouchableOpacity>
       </View>
 
-      <Controls
-        title={`${activeTab === 'spring' ? 'Spring' : 'Bezier'} Configuration`}
-        items={controlItems}
-      />
+      <Animated.View
+        key={activeTab}
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(150)}
+        layout={Layout.duration(300).dampingRatio(0.8)}>
+        <Controls
+          title={`${
+            activeTab === 'spring' ? 'Spring' : 'Bezier'
+          } Configuration`}
+          items={controlItems}
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -195,10 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 6,
   },
-  activeTab: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
+
   tabDot: {
     width: 6,
     height: 6,
@@ -209,8 +216,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     opacity: 0.6,
-  },
-  activeTabText: {
-    opacity: 1,
   },
 });
