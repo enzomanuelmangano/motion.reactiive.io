@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "tsc": "tsc --noEmit",
-    "postinstall": "yarn setup-skia-web && node path-fs-canvaskit-postinstall.js"
+    "predeploy": "expo export -p web && node scripts/copy-canvaskit-in-dist.js",
+    "postinstall": "yarn setup-skia-web && node scripts/path-fs-canvaskit-postinstall.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
