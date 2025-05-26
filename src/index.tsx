@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -30,13 +30,6 @@ const App = () => {
       <View style={styles.container}>
         <StatusBar style="light" />
         <View style={styles.content}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Animation Curve Visualizer</Text>
-            <Text style={styles.subtitle}>
-              Compare Spring vs Bezier easing curves
-            </Text>
-          </View>
-
           <View
             style={[styles.mainContent, !isWideScreen && styles.stackedLayout]}>
             <View style={styles.canvasSection}>
@@ -70,29 +63,14 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  subtitle: {
-    color: '#fff',
-    fontSize: 14,
-    opacity: 0.6,
-    textAlign: 'center',
+    justifyContent: 'center',
   },
   mainContent: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     maxWidth: 1200,
     alignSelf: 'center',
     width: '100%',
@@ -100,16 +78,18 @@ const styles = StyleSheet.create({
   stackedLayout: {
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 24,
+    justifyContent: 'center',
+    gap: 8,
   },
   canvasSection: {
-    flex: 1,
+    width: 400,
     alignItems: 'center',
-    minWidth: 300,
+    justifyContent: 'center',
   },
   controlsSection: {
     width: 380,
     flexShrink: 0,
+    justifyContent: 'center',
   },
 });
 
