@@ -40,7 +40,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         label: 'Mass',
         value: springParams.mass,
         min: 0.1,
-        max: 10,
+        max: 50,
         step: 0.1,
         color: theme.colors.primary.spring,
         formatValue: (value: number) => value.toFixed(1),
