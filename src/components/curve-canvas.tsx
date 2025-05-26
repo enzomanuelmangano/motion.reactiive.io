@@ -94,8 +94,8 @@ export const CurveCanvas = ({
         y2={bezierParams.y2}
         color={theme.colors.primary.bezier}
         strokeWidth={theme.strokeWidths.medium}
-        horizontalPadding={theme.spacing.md}
-        verticalPadding={theme.spacing.md}
+        horizontalPadding={theme.spacing.xxl}
+        verticalPadding={theme.spacing.xxl}
       />
       <SpringCurve
         progress={springProgress}
@@ -104,8 +104,8 @@ export const CurveCanvas = ({
         mass={springParams.mass}
         damping={springParams.damping}
         stiffness={springParams.stiffness}
-        horizontalPadding={theme.spacing.md}
-        verticalPadding={theme.spacing.md}
+        horizontalPadding={theme.spacing.xxl}
+        verticalPadding={theme.spacing.xxl}
         color={theme.colors.primary.spring}
         strokeWidth={theme.strokeWidths.medium}
       />

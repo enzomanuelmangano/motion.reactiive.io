@@ -89,8 +89,8 @@ export const dimensions = {
 
   // Canvas constraints
   canvas: {
-    maxWidth: 400,
-    maxHeight: 280,
+    maxWidth: 600,
+    maxHeight: 480,
     aspectRatio: 4 / 3,
   },
 
@@ -137,7 +137,7 @@ export const shadows = {
 // Stroke widths
 export const strokeWidths = {
   thin: 1,
-  medium: 2,
+  medium: 3,
   thick: 4,
 } as const;
 
