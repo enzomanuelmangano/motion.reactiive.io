@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 
+import { colors } from '../theme';
+
 import { Controls } from './controls';
 import { createSliderControls, type SliderConfig } from './control-utils';
 
@@ -12,8 +14,7 @@ type TimingControlsProps = {
 
 export const TimingControls: React.FC<TimingControlsProps> = ({
   duration,
-  title = 'Timing Configuration',
-  color = '#58c4ff',
+  color = colors.primary.timing,
 }) => {
   const sliderConfigs: SliderConfig[] = useMemo(
     () => [
@@ -36,5 +37,5 @@ export const TimingControls: React.FC<TimingControlsProps> = ({
     [sliderConfigs],
   );
 
-  return <Controls title={title} items={controlItems} />;
+  return <Controls items={controlItems} />;
 };

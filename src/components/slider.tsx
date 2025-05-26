@@ -9,6 +9,14 @@ import type { SharedValue } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import type { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 
+import {
+  colors,
+  componentSpacing,
+  dimensions,
+  borderRadius,
+  shadows,
+} from '../theme';
+
 type SliderProps = {
   label: string;
   value: SharedValue<number>;
@@ -29,7 +37,7 @@ export const Slider = ({
   value,
   min,
   max,
-  color = '#ffc558',
+  color = colors.primary.spring,
   step,
   formatValue,
   unit,
@@ -120,7 +128,7 @@ export const Slider = ({
 
       <PanGestureHandler
         onGestureEvent={gestureHandler}
-        hitSlop={{ top: 20, bottom: 20, left: 10, right: 10 }}>
+        hitSlop={componentSpacing.hitSlop}>
         <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
@@ -147,48 +155,44 @@ export const Slider = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 6,
+    marginVertical: componentSpacing.margin.sm,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: componentSpacing.margin.sm,
   },
   label: {
-    color: '#fff',
+    color: colors.text.primary,
     fontSize: 13,
     fontWeight: '500',
   },
   value: {
-    color: '#fff',
+    color: colors.text.primary,
     fontSize: 13,
     opacity: 0.6,
     fontFamily: 'monospace',
   },
   gestureContainer: {
-    paddingVertical: 12,
+    paddingVertical: componentSpacing.padding.md,
   },
   track: {
-    height: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 1.5,
+    height: dimensions.slider.trackHeight,
+    backgroundColor: colors.background.track,
+    borderRadius: borderRadius.xs,
     overflow: 'visible',
     position: 'relative',
   },
   progress: {
     height: '100%',
-    borderRadius: 1.5,
+    borderRadius: borderRadius.xs,
   },
   thumb: {
     position: 'absolute',
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    top: -5.5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+    width: dimensions.slider.thumbSize,
+    height: dimensions.slider.thumbSize,
+    borderRadius: borderRadius.lg,
+    top: dimensions.slider.thumbOffset,
+    ...shadows.small,
   },
 });
