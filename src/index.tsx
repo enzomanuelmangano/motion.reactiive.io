@@ -10,6 +10,7 @@ import './theme/unistyles';
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
+import { ThemeToggle } from './components/theme-toggle';
 
 const App = () => {
   const { styles, breakpoint } = useStyles(stylesheet);
@@ -33,8 +34,11 @@ const App = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <StatusBar style="light" />
+        <StatusBar style="auto" />
         <View style={styles.content}>
+          <View style={styles.header}>
+            <ThemeToggle />
+          </View>
           <View
             style={[styles.mainContent, !isWideScreen && styles.stackedLayout]}>
             <View style={styles.canvasSection}>
@@ -115,6 +119,10 @@ const stylesheet = createStyleSheet(theme => ({
     flexShrink: 0,
     justifyContent: 'flex-start',
     alignItems: 'center',
+  },
+  header: {
+    alignItems: 'flex-end',
+    paddingBottom: theme.spacing.md,
   },
 }));
 
