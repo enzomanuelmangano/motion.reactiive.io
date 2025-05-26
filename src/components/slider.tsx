@@ -5,6 +5,8 @@ import type { SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
+import { useUnistyles } from '../theme';
+
 type SliderProps = {
   label: string;
   value: SharedValue<number>;
@@ -28,6 +30,7 @@ export const Slider = ({
 }: SliderProps) => {
   const { styles, theme } = useStyles(stylesheet);
   const trackWidthRef = useRef(0);
+  const { isMobile } = useUnistyles();
   const [localValue, setLocalValue] = useState(value.value);
   const [isEditing, setIsEditing] = useState(false);
   const [textInputValue, setTextInputValue] = useState('');
@@ -97,7 +100,7 @@ export const Slider = ({
   });
 
   const panGesture = Gesture.Pan()
-    .onBegin(event => {
+    [isMobile ? 'onStart' : 'onBegin'](event => {
       runOnJS(updateValue)(event.x);
     })
     .onUpdate(event => {

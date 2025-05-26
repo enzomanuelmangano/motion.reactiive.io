@@ -37,13 +37,13 @@ type CurveCanvasProps = {
 };
 
 const TimingConfig = {
-  duration: 200,
+  duration: 150,
   easing: Easing.linear,
 };
 
 const SpringConfig = {
   mass: 0.1,
-  stiffness: 17,
+  stiffness: 30,
   damping: 5,
 };
 
@@ -132,7 +132,7 @@ export const CurveCanvas = ({
 
   const baseBorder = theme.colors.border.primary;
   const baseBorderSecondary = Color(baseBorder)
-    [isDark ? 'lighten' : 'darken'](0.5)
+    [isDark ? 'lighten' : 'darken'](isDark ? 0.5 : 0.1)
     .toString();
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -159,7 +159,7 @@ export const CurveCanvas = ({
   const rCanvasStyle = useAnimatedStyle(() => {
     return {
       flex: 1,
-      transform: [{ scale: interpolate(isHovered.value, [0, 1], [1, 0.95]) }],
+      transform: [{ scale: interpolate(isHovered.value, [0, 1], [1, 0.9]) }],
     };
   });
   return (

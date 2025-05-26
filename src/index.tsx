@@ -74,6 +74,7 @@ const stylesheet = createStyleSheet(theme => ({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: theme.colors.background.primary,
   },
   scrollViewContent: {
     flexGrow: 1,

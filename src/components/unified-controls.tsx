@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -7,9 +7,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import Color from 'color';
 
 import { Controls } from './controls';
 import { createSliderControls, type SliderConfig } from './control-utils';
+import { PressableHighlight } from './pressable';
 
 type UnifiedControlsProps = {
   springParams: {
@@ -32,6 +34,13 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
 }) => {
   const { styles, theme } = useStyles(stylesheet);
   const [activeTab, setActiveTab] = useState<'spring' | 'bezier'>('spring');
+
+  const inactiveSpringBackgroundColor = Color(theme.colors.state.springActive)
+    .alpha(0.0)
+    .toString();
+  const inactiveBezierBackgroundColor = Color(theme.colors.state.bezierActive)
+    .alpha(0.0)
+    .toString();
 
   const springSliderConfigs: SliderConfig[] = useMemo(
     () => [
@@ -138,8 +147,12 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'spring' && styles.springTabActive]}
+        <PressableHighlight
+          activeBackgroundColor={theme.colors.state.springActive}
+          inactiveBackgroundColor={inactiveSpringBackgroundColor}
+          isActive={activeTab === 'spring'}
+          style={styles.tab}
+          contentStyle={styles.tabContent}
           onPress={() => handleTabSwitch('spring')}>
           <View style={[styles.tabDot, styles.springDot]} />
           <Text
@@ -149,10 +162,14 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
             ]}>
             Spring
           </Text>
-        </TouchableOpacity>
+        </PressableHighlight>
 
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'bezier' && styles.bezierTabActive]}
+        <PressableHighlight
+          activeBackgroundColor={theme.colors.state.bezierActive}
+          inactiveBackgroundColor={inactiveBezierBackgroundColor}
+          isActive={activeTab === 'bezier'}
+          style={styles.tab}
+          contentStyle={styles.tabContent}
           onPress={() => handleTabSwitch('bezier')}>
           <View style={[styles.tabDot, styles.bezierDot]} />
           <Text
@@ -162,7 +179,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
             ]}>
             Bezier
           </Text>
-        </TouchableOpacity>
+        </PressableHighlight>
       </View>
 
       <Animated.View
@@ -188,27 +205,21 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: theme.borderRadius.xl,
     padding: theme.spacing.xs,
     borderWidth: theme.strokeWidths.thin,
+    gap: theme.spacing.xs,
     borderColor: theme.colors.border.primary,
   },
   tab: {
+    flex: 1,
+    borderRadius: theme.borderRadius.xl,
+  },
+  tabContent: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
     gap: theme.spacing.xs,
-  },
-  springTabActive: {
-    backgroundColor: theme.colors.state.springActive,
-    borderWidth: theme.strokeWidths.thin,
-    borderColor: theme.colors.state.springBorder,
-  },
-  bezierTabActive: {
-    backgroundColor: theme.colors.state.bezierActive,
-    borderWidth: theme.strokeWidths.thin,
-    borderColor: theme.colors.state.bezierBorder,
   },
   tabDot: {
     width: theme.dimensions.tabDot.size,
