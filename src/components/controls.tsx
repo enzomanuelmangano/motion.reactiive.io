@@ -40,7 +40,7 @@ const stylesheet = createStyleSheet(theme => ({
     marginVertical: theme.spacing.sm,
     padding: theme.spacing.lg,
     backgroundColor: theme.colors.background.secondary,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.xl,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
   },

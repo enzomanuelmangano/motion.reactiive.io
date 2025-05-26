@@ -60,11 +60,11 @@ export const spacing = {
 
 // Border radius values
 export const borderRadius = {
-  xs: 1.5, // Slider track
-  sm: 3, // Thumb border radius (half of 6)
-  md: 6, // Tab border radius
-  lg: 7, // Thumb border radius (half of 14)
-  xl: 8, // Tab container border radius
+  xs: 2, // Slider track
+  sm: 4, // Thumb border radius (half of 6)
+  md: 8, // Tab border radius
+  lg: 10, // Thumb border radius (half of 14)
+  xl: 12, // Tab container border radius
 } as const;
 
 // Dimensions

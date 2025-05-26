@@ -1,5 +1,15 @@
 import { useStyles, UnistylesRuntime } from 'react-native-unistyles';
 
+const ThemeStorageKey = 'theme';
+
+export const ThemeStorage = {
+  get: () => {
+    return localStorage.getItem(ThemeStorageKey) as 'light' | 'dark' | null;
+  },
+  set: (theme: 'light' | 'dark') => {
+    return localStorage.setItem(ThemeStorageKey, theme);
+  },
+};
 /**
  * Custom hook that provides access to unistyles theme and utilities
  * This hook gives you access to:
@@ -16,10 +26,12 @@ export const useUnistyles = () => {
     const currentTheme = UnistylesRuntime.themeName;
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     UnistylesRuntime.setTheme(newTheme);
+    ThemeStorage.set(newTheme);
   };
 
   const setTheme = (themeName: 'light' | 'dark') => {
     UnistylesRuntime.setTheme(themeName);
+    ThemeStorage.set(themeName);
   };
 
   return {

@@ -158,7 +158,7 @@ export const CurveCanvas = ({
       width: canvasWidth,
       height: canvasHeight,
       backgroundColor,
-      borderRadius: 12,
+      borderRadius: theme.borderRadius.xl,
       borderWidth: theme.strokeWidths.thin,
       borderColor: interpolateColor(
         isHoveredTiming.value,

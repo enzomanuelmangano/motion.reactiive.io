@@ -210,7 +210,7 @@ const stylesheet = createStyleSheet(theme => ({
   },
   tab: {
     flex: 1,
-    borderRadius: theme.borderRadius.xl,
+    borderRadius: theme.borderRadius.xl - theme.spacing.xs,
   },
   tabContent: {
     flex: 1,

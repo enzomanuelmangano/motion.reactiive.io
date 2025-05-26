@@ -109,8 +109,6 @@ const themes = {
 UnistylesRegistry.addBreakpoints(breakpoints).addThemes(themes).addConfig({
   // Set initial theme
   initialTheme: 'dark',
-  // Adapt to system theme changes
-  adaptiveThemes: true,
 });
 
 // Type declarations for TypeScript support
