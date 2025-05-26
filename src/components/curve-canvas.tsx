@@ -33,8 +33,8 @@ export const CurveCanvas = ({
   bezierParams,
 }: CurveCanvasProps) => {
   const { width } = useWindowDimensions();
-  const canvasWidth = Math.min(width * 0.9, 300);
-  const canvasHeight = (canvasWidth / 4) * 3;
+  const canvasWidth = Math.min(width * 0.95, 400);
+  const canvasHeight = Math.min((canvasWidth / 4) * 3, 280);
 
   const bezierProgress = useSharedValue(0);
   const springProgress = useSharedValue(0);
@@ -75,9 +75,14 @@ export const CurveCanvas = ({
         width: canvasWidth,
         height: canvasHeight,
         backgroundColor: '#0a0a0a',
-        borderRadius: 10,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#202020ff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
       }}>
       <BezierCurve
         progress={bezierProgress}

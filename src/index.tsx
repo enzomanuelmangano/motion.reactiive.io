@@ -1,13 +1,16 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { CurveCanvas } from './components/curve-canvas';
-import { SpringControls } from './components/spring-controls';
-import { BezierControls } from './components/bezier-controls';
+import { UnifiedControls } from './components/unified-controls';
+import { CurveLegend } from './components/curve-legend';
 
 const App = () => {
+  const { width } = useWindowDimensions();
+  const isWideScreen = width > 900;
+
   const springParams = {
     mass: useSharedValue(2),
     damping: useSharedValue(20),
@@ -27,22 +30,30 @@ const App = () => {
       <View style={styles.container}>
         <StatusBar style="light" />
         <View style={styles.content}>
-          <CurveCanvas
-            springParams={springParams}
-            bezierParams={bezierParams}
-          />
-          <SpringControls
-            mass={springParams.mass}
-            damping={springParams.damping}
-            stiffness={springParams.stiffness}
-          />
-          <BezierControls
-            x1={bezierParams.x1}
-            y1={bezierParams.y1}
-            x2={bezierParams.x2}
-            y2={bezierParams.y2}
-            duration={bezierParams.duration}
-          />
+          <View style={styles.header}>
+            <Text style={styles.title}>Animation Curve Visualizer</Text>
+            <Text style={styles.subtitle}>
+              Compare Spring vs Bezier easing curves
+            </Text>
+          </View>
+
+          <View
+            style={[styles.mainContent, !isWideScreen && styles.stackedLayout]}>
+            <View style={styles.canvasSection}>
+              <CurveCanvas
+                springParams={springParams}
+                bezierParams={bezierParams}
+              />
+              <CurveLegend />
+            </View>
+
+            <View style={styles.controlsSection}>
+              <UnifiedControls
+                springParams={springParams}
+                bezierParams={bezierParams}
+              />
+            </View>
+          </View>
         </View>
       </View>
     </GestureHandlerRootView>
@@ -57,9 +68,48 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 50,
-    paddingBottom: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  header: {
     alignItems: 'center',
-    paddingHorizontal: 16,
+    marginBottom: 32,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: '#fff',
+    fontSize: 14,
+    opacity: 0.6,
+    textAlign: 'center',
+  },
+  mainContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 32,
+    maxWidth: 1200,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  stackedLayout: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 24,
+  },
+  canvasSection: {
+    flex: 1,
+    alignItems: 'center',
+    minWidth: 300,
+  },
+  controlsSection: {
+    width: 380,
+    flexShrink: 0,
   },
 });
 

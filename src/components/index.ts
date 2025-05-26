@@ -6,6 +6,7 @@ export { Slider } from './slider';
 export { SpringControls } from './spring-controls';
 export { TimingControls } from './timing-controls';
 export { BezierControls } from './bezier-controls';
+export { UnifiedControls } from './unified-controls';
 
 // Backward compatibility
 export { SpringSlider } from './spring-slider';

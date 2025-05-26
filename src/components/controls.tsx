@@ -37,13 +37,17 @@ export const Controls: React.FC<ControlsProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    maxWidth: 380,
-    marginVertical: 12,
-    padding: 12,
-    backgroundColor: 'rgba(17, 17, 17, 0.6)',
-    borderRadius: 8,
+    marginVertical: 8,
+    padding: 14,
+    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.03)',
+    borderColor: 'rgba(255,255,255,0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   title: {
     color: '#fff',
