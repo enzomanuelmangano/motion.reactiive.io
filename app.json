@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "curves",
-    "slug": "curves",
+    "name": "Motion",
+    "slug": "motion",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

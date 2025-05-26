@@ -1,8 +1,8 @@
 {
-  "name": "curves",
+  "name": "motion",
   "version": "1.0.0",
   "main": "index",
-  "scheme": "curves",
+  "scheme": "motion",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

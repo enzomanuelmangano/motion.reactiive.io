@@ -4,6 +4,7 @@ const path = require('path');
 
 const packageJsonPath = path.join(
   __dirname,
+  '..',
   'node_modules',
   'canvaskit-wasm',
   'package.json'
