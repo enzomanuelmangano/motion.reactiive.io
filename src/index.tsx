@@ -1,67 +1,130 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+
+// Initialize unistyles
+import './theme/unistyles';
 
 import { CurveCanvas } from './components/curve-canvas';
-import { SpringControls } from './components/spring-controls';
-import { BezierControls } from './components/bezier-controls';
+import { UnifiedControls } from './components/unified-controls';
+import { CurveLegend } from './components/curve-legend';
+import { ThemeToggle } from './components/theme-toggle';
 
 const App = () => {
+  const { styles, breakpoint } = useStyles(stylesheet);
+
   const springParams = {
-    mass: useSharedValue(2),
-    damping: useSharedValue(20),
-    stiffness: useSharedValue(150),
+    mass: useSharedValue(1.5),
+    damping: useSharedValue(17),
+    stiffness: useSharedValue(46),
   };
 
   const bezierParams = {
-    x1: useSharedValue(0.5),
-    y1: useSharedValue(0),
-    x2: useSharedValue(0.5),
-    y2: useSharedValue(1),
+    x1: useSharedValue(0.25),
+    y1: useSharedValue(0.46),
+    x2: useSharedValue(0.45),
+    y2: useSharedValue(0.94),
     duration: useSharedValue(1000),
   };
+
+  const showLegend = breakpoint !== 'xs';
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <StatusBar style="light" />
+        <StatusBar style="auto" />
         <View style={styles.content}>
-          <CurveCanvas
-            springParams={springParams}
-            bezierParams={bezierParams}
-          />
-          <SpringControls
-            mass={springParams.mass}
-            damping={springParams.damping}
-            stiffness={springParams.stiffness}
-          />
-          <BezierControls
-            x1={bezierParams.x1}
-            y1={bezierParams.y1}
-            x2={bezierParams.x2}
-            y2={bezierParams.y2}
-            duration={bezierParams.duration}
-          />
+          <View style={styles.mainContent}>
+            <View style={styles.canvasSection}>
+              <CurveCanvas
+                springParams={springParams}
+                bezierParams={bezierParams}
+              />
+              {showLegend && <CurveLegend />}
+            </View>
+
+            <View>
+              <View style={styles.controlsSection}>
+                <UnifiedControls
+                  springParams={springParams}
+                  bezierParams={bezierParams}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Theme toggle positioned at bottom right */}
+        <View style={styles.themeToggleContainer}>
+          <ThemeToggle />
         </View>
       </View>
     </GestureHandlerRootView>
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
-    backgroundColor: '#080808',
+    backgroundColor: theme.colors.background.primary,
   },
   content: {
     flex: 1,
-    paddingTop: 50,
-    paddingBottom: 50,
-    alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingTop: {
+      xs: theme.spacing.xxxl,
+      md: theme.spacing.xxxl,
+    },
+    paddingBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+    justifyContent: 'center',
   },
-});
+  mainContent: {
+    flex: 1,
+    flexDirection: {
+      xs: 'column',
+      lg: 'row',
+    },
+    alignItems: {
+      xs: 'center',
+      lg: 'flex-start',
+    },
+    justifyContent: {
+      xs: 'flex-start',
+      lg: 'center',
+    },
+    gap: theme.spacing.sm,
+    maxWidth: theme.dimensions.container.maxWidth.main,
+    alignSelf: 'center',
+    width: '100%',
+    paddingTop: {
+      xs: theme.spacing.xl,
+      lg: theme.spacing.xxxxl,
+    },
+  },
+  canvasSection: {
+    width: {
+      xs: '100%',
+      sm: theme.dimensions.canvas.maxWidth,
+    },
+    maxWidth: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  controlsSection: {
+    width: theme.dimensions.container.maxWidth.controls,
+    flexShrink: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  themeToggleContainer: {
+    position: 'absolute',
+    bottom: theme.spacing.lg,
+    right: theme.spacing.lg,
+    zIndex: 1000,
+  },
+}));
 
 // eslint-disable-next-line import/no-default-export
 export default App;

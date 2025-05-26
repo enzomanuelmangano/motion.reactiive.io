@@ -14,7 +14,6 @@ type SpringCurveProps = {
   verticalPadding?: number;
   progress: SharedValue<number>;
   strokeWidth?: number;
-  amplitude?: number; // New prop
 };
 
 export const SpringCurve = ({
@@ -28,7 +27,6 @@ export const SpringCurve = ({
   verticalPadding = 30,
   progress,
   strokeWidth = 4,
-  amplitude = 1, // Default to 1x amplitude
 }: SpringCurveProps) => {
   const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
@@ -38,10 +36,20 @@ export const SpringCurve = ({
     const c = damping.value;
     const k = stiffness.value;
 
+    // Safety checks for invalid parameters
+    if (m <= 0 || k <= 0 || c < 0 || width <= 0 || height <= 0) {
+      const y = verticalPadding + (height - verticalPadding * 2);
+      springPath.moveTo(horizontalPadding, y);
+      springPath.lineTo(width - horizontalPadding, y);
+      return springPath;
+    }
+
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
 
-    const centerY = height / 2;
+    // Define anchor points to match Bezier curve
+    const startX = horizontalPadding;
+    const startY = verticalPadding;
 
     const omega = Math.sqrt(k / m);
     const zeta = c / (2 * Math.sqrt(k * m));
@@ -60,10 +68,10 @@ export const SpringCurve = ({
     const initialDisplacement = (() => {
       if (zeta < 1) return 1;
       if (zeta === 1) return 1;
-      return (Math.exp(s1 * 0) - Math.exp(s2 * 0)) / (s1 - s2);
+      return 1;
     })();
 
-    let prevY = 0;
+    let prevY = startY;
 
     for (let i = 0; i <= steps; i++) {
       const t = i * dt;
@@ -72,24 +80,50 @@ export const SpringCurve = ({
 
       if (zeta < 1) {
         const omegaD = omega * Math.sqrt(1 - zeta * zeta);
-        displacement = Math.exp(-zeta * omega * t) * Math.cos(omegaD * t);
+        // Ensure omegaD is not zero, which it shouldn't be if zeta < 1 and omega > 0.
+        // If omegaD were zero, it implies zeta is 1, which is handled by the next case.
+        if (omegaD > 0) {
+          const sinTermCoefficient = (zeta * omega) / omegaD;
+          displacement =
+            Math.exp(-zeta * omega * t) *
+            (Math.cos(omegaD * t) + sinTermCoefficient * Math.sin(omegaD * t));
+        } else {
+          // Fallback for extremely rare case where omegaD might be non-positive due to precision with zeta very near 1.
+          // Treat as critically damped if omegaD is not positive.
+          displacement = Math.exp(-omega * t) * (1 + omega * t);
+        }
       } else if (zeta === 1) {
         displacement = Math.exp(-omega * t) * (1 + omega * t);
       } else {
-        displacement = (Math.exp(s1 * t) - Math.exp(s2 * t)) / (s1 - s2);
+        const A = -s2 / (s1 - s2);
+        const B = s1 / (s1 - s2);
+        displacement = A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
+      }
+
+      // Safety check for invalid displacement values
+      if (!isFinite(displacement)) {
+        displacement = 0;
       }
 
       const normalized = displacement / initialDisplacement;
-      const scaledDisplacement = normalized * (drawableHeight / 2) * amplitude;
+      // Scale displacement to match Bezier curve's height
+      const scaledDisplacement = normalized * drawableHeight;
 
-      const x = horizontalPadding + (i / steps) * drawableWidth;
-      const y = centerY + scaledDisplacement;
+      const x = startX + (i / steps) * drawableWidth;
+      // Map displacement to match Bezier curve's coordinate system
+      const y = startY + scaledDisplacement;
+
+      // Safety check for invalid coordinates
+      if (!isFinite(x) || !isFinite(y)) {
+        continue;
+      }
 
       if (i === 0) {
         springPath.moveTo(x, y);
         prevY = y;
       } else {
-        const maxDelta = drawableHeight / 5;
+        // Limit the maximum change in y to prevent extreme oscillations
+        const maxDelta = drawableHeight * 0.2; // 20% of drawable height
         const delta = y - prevY;
         const clampedY = prevY + Math.max(-maxDelta, Math.min(maxDelta, delta));
 
@@ -107,7 +141,6 @@ export const SpringCurve = ({
     stiffness,
     horizontalPadding,
     verticalPadding,
-    amplitude,
   ]);
 
   const point = useAnimateThroughPath({ path, progress });
@@ -130,8 +163,6 @@ export const SpringCurve = ({
         strokeWidth={strokeWidth}
         color={color}
         strokeCap="round"
-        start={0}
-        end={1}
         opacity={0.5}
       />
     </Group>

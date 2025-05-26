@@ -16,6 +16,11 @@ const getPathPoints = (path: SkPath): Point[] => {
   const geometry = createPathGeometry(path);
   const totalLength = geometry.getTotalLength();
 
+  // If path has no length, return a default point to prevent crashes
+  if (totalLength <= 0) {
+    return [{ x: 0, y: 0 }];
+  }
+
   for (let i = 0; i < totalLength; i++) {
     const point = geometry.getPointAtLength(i);
     points.push({ x: point.x, y: point.y });

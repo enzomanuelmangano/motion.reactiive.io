@@ -1,13 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View, TextInput, Pressable } from 'react-native';
 import { useRef, useCallback, useState, useEffect } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useAnimatedGestureHandler,
-  runOnJS,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import type { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 type SliderProps = {
   label: string;
@@ -20,22 +16,25 @@ type SliderProps = {
   unit?: string;
 };
 
-type GestureContext = {
-  startX: number;
-};
-
 export const Slider = ({
   label,
   value,
   min,
   max,
-  color = '#ffc558',
+  color,
   step,
   formatValue,
   unit,
 }: SliderProps) => {
+  const { styles, theme } = useStyles(stylesheet);
   const trackWidthRef = useRef(0);
   const [localValue, setLocalValue] = useState(value.value);
+  const [isEditing, setIsEditing] = useState(false);
+  const [textInputValue, setTextInputValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
+
+  // Use theme color as default if no color is provided
+  const sliderColor = color || theme.colors.primary.spring;
 
   useEffect(() => {
     // Update shared value when local value changes
@@ -97,30 +96,65 @@ export const Slider = ({
     };
   });
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: (event, context) => {
-      context.startX = event.x;
+  const panGesture = Gesture.Pan()
+    .onBegin(event => {
       runOnJS(updateValue)(event.x);
-    },
-    onActive: event => {
+    })
+    .onUpdate(event => {
       runOnJS(updateValue)(event.x);
-    },
-    onEnd: () => {},
-  });
+    })
+    .hitSlop({
+      top: 20,
+      bottom: 20,
+      left: 10,
+      right: 10,
+    });
+
+  const handleValuePress = () => {
+    setIsEditing(true);
+    setTextInputValue(localValue.toString());
+    // Focus the input after a short delay to ensure it's mounted
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleInputSubmit = () => {
+    const newValue = parseFloat(textInputValue);
+    if (!isNaN(newValue)) {
+      const clampedValue = Math.max(min, Math.min(max, newValue));
+      const finalValue = snapToStep(clampedValue);
+      setLocalValue(finalValue);
+    }
+    setIsEditing(false);
+  };
+
+  const handleInputBlur = () => {
+    handleInputSubmit();
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
-        <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
+        {isEditing ? (
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            value={textInputValue}
+            onChangeText={setTextInputValue}
+            keyboardType="numeric"
+            onBlur={handleInputBlur}
+            onSubmitEditing={handleInputSubmit}
+            selectTextOnFocus
+            autoFocus
+          />
+        ) : (
+          <Pressable onPress={handleValuePress}>
+            <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
+          </Pressable>
+        )}
       </View>
 
-      <PanGestureHandler
-        onGestureEvent={gestureHandler}
-        hitSlop={{ top: 20, bottom: 20, left: 10, right: 10 }}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
@@ -130,65 +164,80 @@ export const Slider = ({
             <Animated.View
               style={[
                 styles.progress,
-                { backgroundColor: color },
+                { backgroundColor: sliderColor },
                 progressStyle,
               ]}
             />
             <Animated.View
-              style={[styles.thumb, { backgroundColor: color }, thumbStyle]}
+              style={[
+                styles.thumb,
+                { backgroundColor: sliderColor },
+                thumbStyle,
+              ]}
             />
           </View>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    marginVertical: 6,
+    marginVertical: theme.spacing.sm,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: theme.spacing.sm,
   },
   label: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 13,
     fontWeight: '500',
   },
   value: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 13,
-    opacity: 0.6,
+    opacity: theme.opacity.disabled,
     fontFamily: 'monospace',
+    minWidth: 50,
+    textAlign: 'right',
   },
   gestureContainer: {
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
   },
   track: {
-    height: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 1.5,
+    height: theme.dimensions.slider.trackHeight,
+    backgroundColor: theme.colors.background.track,
+    borderRadius: theme.borderRadius.xs,
     overflow: 'visible',
     position: 'relative',
   },
   progress: {
     height: '100%',
-    borderRadius: 1.5,
+    borderRadius: theme.borderRadius.xs,
   },
   thumb: {
     position: 'absolute',
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    top: -5.5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+    width: theme.dimensions.slider.thumbSize,
+    height: theme.dimensions.slider.thumbSize,
+    borderRadius: theme.borderRadius.lg,
+    top: theme.dimensions.slider.thumbOffset,
+    ...theme.shadows.small,
   },
-});
+  input: {
+    color: theme.colors.text.primary,
+    fontSize: 13,
+    fontFamily: 'monospace',
+    minWidth: 50,
+    maxWidth: 80,
+    textAlign: 'right',
+    padding: 0,
+    margin: 0,
+    height: 16,
+    lineHeight: 16,
+    outline: 'none',
+  },
+}));

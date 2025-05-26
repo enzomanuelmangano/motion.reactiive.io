@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ViewStyle } from 'react-native';
-import { StyleSheet, View, Text } from 'react-native';
+import { View } from 'react-native';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 export type ControlItem = {
   id: string;
@@ -8,21 +9,20 @@ export type ControlItem = {
 };
 
 type ControlsProps = {
-  title?: string;
   items: ControlItem[];
   style?: ViewStyle;
   containerStyle?: ViewStyle;
 };
 
 export const Controls: React.FC<ControlsProps> = ({
-  title,
   items,
   style,
   containerStyle,
 }) => {
+  const { styles } = useStyles(stylesheet);
+
   return (
     <View style={[styles.container, containerStyle]}>
-      {title && <Text style={styles.title}>{title}</Text>}
       <View style={[styles.controlsWrapper, style]}>
         {items.map(item => (
           <View key={item.id} style={styles.controlItem}>
@@ -34,29 +34,20 @@ export const Controls: React.FC<ControlsProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     width: '100%',
-    maxWidth: 380,
-    marginVertical: 12,
-    padding: 12,
-    backgroundColor: 'rgba(17, 17, 17, 0.6)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.03)',
-  },
-  title: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-    textAlign: 'center',
-    opacity: 0.8,
+    marginVertical: theme.spacing.sm,
+    padding: theme.spacing.lg,
+    backgroundColor: theme.colors.background.secondary,
+    borderRadius: 10,
+    borderWidth: theme.strokeWidths.thin,
+    borderColor: theme.colors.border.primary,
   },
   controlsWrapper: {
     width: '100%',
   },
   controlItem: {
-    marginVertical: 1,
+    marginVertical: theme.spacing.xs,
   },
-});
+}));
