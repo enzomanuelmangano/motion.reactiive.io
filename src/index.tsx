@@ -36,9 +36,6 @@ const App = () => {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={styles.content}>
-          <View style={styles.header}>
-            <ThemeToggle />
-          </View>
           <View
             style={[styles.mainContent, !isWideScreen && styles.stackedLayout]}>
             <View style={styles.canvasSection}>
@@ -58,6 +55,11 @@ const App = () => {
               </View>
             </View>
           </View>
+        </View>
+
+        {/* Theme toggle positioned at bottom right */}
+        <View style={styles.themeToggleContainer}>
+          <ThemeToggle />
         </View>
       </View>
     </GestureHandlerRootView>
@@ -120,9 +122,11 @@ const stylesheet = createStyleSheet(theme => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  header: {
-    alignItems: 'flex-end',
-    paddingBottom: theme.spacing.md,
+  themeToggleContainer: {
+    position: 'absolute',
+    bottom: theme.spacing.lg,
+    right: theme.spacing.lg,
+    zIndex: 1000,
   },
 }));
 

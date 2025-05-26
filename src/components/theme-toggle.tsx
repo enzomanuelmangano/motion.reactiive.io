@@ -1,40 +1,37 @@
 import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useUnistyles } from '../hooks/use-unistyles';
 
 export const ThemeToggle: React.FC = () => {
   const { styles } = useStyles(stylesheet);
-  const { isDark, toggleTheme } = useUnistyles();
+  const { isDark, toggleTheme, theme } = useUnistyles();
 
   return (
-    <TouchableOpacity style={styles.container} onPress={toggleTheme}>
-      <Text style={styles.icon}>{isDark ? '☀️' : '🌙'}</Text>
-      <Text style={styles.label}>{isDark ? 'Light Mode' : 'Dark Mode'}</Text>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={toggleTheme}
+      activeOpacity={0.7}>
+      <Ionicons
+        name={isDark ? 'sunny-outline' : 'moon-outline'}
+        size={18}
+        color={theme.colors.text.secondary}
+      />
     </TouchableOpacity>
   );
 };
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: theme.colors.background.surface,
-    borderRadius: theme.borderRadius.md,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.background.secondary,
     borderWidth: theme.strokeWidths.thin,
-    borderColor: theme.colors.border.secondary,
-    gap: theme.spacing.xs,
-    ...theme.shadows.small,
-  },
-  icon: {
-    fontSize: 16,
-  },
-  label: {
-    color: theme.colors.text.primary,
-    fontSize: 14,
-    fontWeight: '500',
+    borderColor: theme.colors.border.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
