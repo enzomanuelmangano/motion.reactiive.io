@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,26 +32,31 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <StatusBar style="auto" />
-        <View style={styles.content}>
-          <View style={styles.mainContent}>
-            <View style={styles.canvasSection}>
-              <CurveCanvas
-                springParams={springParams}
-                bezierParams={bezierParams}
-              />
-              {showLegend && <CurveLegend />}
-            </View>
-
-            <View>
-              <View style={styles.controlsSection}>
-                <UnifiedControls
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            <View style={styles.mainContent}>
+              <View style={styles.canvasSection}>
+                <CurveCanvas
                   springParams={springParams}
                   bezierParams={bezierParams}
                 />
+                {showLegend && <CurveLegend />}
+              </View>
+
+              <View>
+                <View style={styles.controlsSection}>
+                  <UnifiedControls
+                    springParams={springParams}
+                    bezierParams={bezierParams}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
 
         {/* Theme toggle positioned at bottom right */}
         <View style={styles.themeToggleContainer}>
@@ -67,13 +72,19 @@ const stylesheet = createStyleSheet(theme => ({
     flex: 1,
     backgroundColor: theme.colors.background.primary,
   },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
   content: {
     flex: 1,
     paddingTop: {
       xs: theme.spacing.xxxl,
       md: theme.spacing.xxxl,
     },
-    paddingBottom: theme.spacing.lg,
+    paddingBottom: theme.spacing.xxxl,
     paddingHorizontal: theme.spacing.lg,
     justifyContent: 'center',
   },
