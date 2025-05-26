@@ -80,7 +80,18 @@ export const SpringCurve = ({
 
       if (zeta < 1) {
         const omegaD = omega * Math.sqrt(1 - zeta * zeta);
-        displacement = Math.exp(-zeta * omega * t) * Math.cos(omegaD * t);
+        // Ensure omegaD is not zero, which it shouldn't be if zeta < 1 and omega > 0.
+        // If omegaD were zero, it implies zeta is 1, which is handled by the next case.
+        if (omegaD > 0) {
+          const sinTermCoefficient = (zeta * omega) / omegaD;
+          displacement =
+            Math.exp(-zeta * omega * t) *
+            (Math.cos(omegaD * t) + sinTermCoefficient * Math.sin(omegaD * t));
+        } else {
+          // Fallback for extremely rare case where omegaD might be non-positive due to precision with zeta very near 1.
+          // Treat as critically damped if omegaD is not positive.
+          displacement = Math.exp(-omega * t) * (1 + omega * t);
+        }
       } else if (zeta === 1) {
         displacement = Math.exp(-omega * t) * (1 + omega * t);
       } else {
