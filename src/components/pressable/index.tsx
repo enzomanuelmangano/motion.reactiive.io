@@ -1,6 +1,7 @@
 import { type ViewStyle, type StyleProp, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  Easing,
   interpolate,
   interpolateColor,
   runOnJS,
@@ -23,7 +24,7 @@ type PressableHighlightProps = {
 };
 
 const ActiveSpringConfig = {
-  mass: 1.2,
+  mass: 0.2,
   damping: 19,
   stiffness: 150,
 };
@@ -37,7 +38,7 @@ export const PressableHighlight = ({
   inactiveBackgroundColor = 'rgba(255,255,255,0)',
   isActive = false,
   minScale = 1,
-  maxScale = 1.05,
+  maxScale = 0.9,
 }: PressableHighlightProps) => {
   const isHoveredProgress = useSharedValue(0);
   const isHoveredSpringProgress = useSharedValue(0);
@@ -73,12 +74,19 @@ export const PressableHighlight = ({
   });
 
   const hover = Gesture.Hover()
+    .enabled(!isActive)
     .onBegin(() => {
-      isHoveredProgress.value = withTiming(1, { duration: 100 });
+      isHoveredProgress.value = withTiming(1, {
+        duration: 150,
+        easing: Easing.linear,
+      });
       isHoveredSpringProgress.value = withSpring(1, ActiveSpringConfig);
     })
     .onFinalize(() => {
-      isHoveredProgress.value = withTiming(0, { duration: 100 });
+      isHoveredProgress.value = withTiming(0, {
+        duration: 150,
+        easing: Easing.linear,
+      });
       isHoveredSpringProgress.value = withSpring(0, ActiveSpringConfig);
     });
 
