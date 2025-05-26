@@ -34,6 +34,15 @@ export const BezierCurve = ({
   const path = useDerivedValue(() => {
     const bezierPath = Skia.Path.Make();
 
+    // Safety checks for invalid dimensions
+    if (width <= 0 || height <= 0) {
+      // Create a simple horizontal line as fallback
+      const y = height > 0 ? height / 2 : 0;
+      bezierPath.moveTo(0, y);
+      bezierPath.lineTo(width > 0 ? width : 100, y);
+      return bezierPath;
+    }
+
     // Add padding
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
@@ -53,11 +62,21 @@ export const BezierCurve = ({
     const cp2x = horizontalPadding + x2.value * drawableWidth;
     const cp2y = verticalPadding + y2.value * drawableHeight;
 
+    // Safety check for invalid coordinates
+    const coords = [startX, startY, cp1x, cp1y, cp2x, cp2y, endX, endY];
+    if (coords.some(coord => !isFinite(coord))) {
+      // Create a simple horizontal line as fallback
+      const y = height / 2;
+      bezierPath.moveTo(horizontalPadding, y);
+      bezierPath.lineTo(width - horizontalPadding, y);
+      return bezierPath;
+    }
+
     // Create cubic Bezier curve
     bezierPath.moveTo(startX, startY);
     bezierPath.cubicTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
 
-    return bezierPath!;
+    return bezierPath;
   }, [width, height, x1, y1, x2, y2, horizontalPadding, verticalPadding]);
 
   const point = useAnimateThroughPath({ path, progress });

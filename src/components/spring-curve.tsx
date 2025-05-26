@@ -38,6 +38,15 @@ export const SpringCurve = ({
     const c = damping.value;
     const k = stiffness.value;
 
+    // Safety checks for invalid parameters
+    if (m <= 0 || k <= 0 || c < 0 || width <= 0 || height <= 0) {
+      // Create a simple horizontal line as fallback
+      const y = height / 2;
+      springPath.moveTo(horizontalPadding, y);
+      springPath.lineTo(width - horizontalPadding, y);
+      return springPath;
+    }
+
     const drawableWidth = width - horizontalPadding * 2;
     const drawableHeight = height - verticalPadding * 2;
 
@@ -60,7 +69,15 @@ export const SpringCurve = ({
     const initialDisplacement = (() => {
       if (zeta < 1) return 1;
       if (zeta === 1) return 1;
-      return (Math.exp(s1 * 0) - Math.exp(s2 * 0)) / (s1 - s2);
+      // For overdamped case, the initial displacement should be 1 (starting from rest)
+      // The formula (Math.exp(s1 * 0) - Math.exp(s2 * 0)) / (s1 - s2) = 0/something = 0
+      // which causes division by zero later. We need the coefficient for the initial condition.
+      // For overdamped: x(t) = A*exp(s1*t) + B*exp(s2*t)
+      // With initial conditions x(0) = 1, x'(0) = 0:
+      // A + B = 1 and A*s1 + B*s2 = 0
+      // Solving: A = -s2/(s1-s2), B = s1/(s1-s2)
+      // So x(0) = A + B = (-s2 + s1)/(s1-s2) = 1
+      return 1;
     })();
 
     let prevY = 0;
@@ -76,7 +93,17 @@ export const SpringCurve = ({
       } else if (zeta === 1) {
         displacement = Math.exp(-omega * t) * (1 + omega * t);
       } else {
-        displacement = (Math.exp(s1 * t) - Math.exp(s2 * t)) / (s1 - s2);
+        // Overdamped case: x(t) = A*exp(s1*t) + B*exp(s2*t)
+        // With initial conditions x(0) = 1, x'(0) = 0:
+        // A = -s2/(s1-s2), B = s1/(s1-s2)
+        const A = -s2 / (s1 - s2);
+        const B = s1 / (s1 - s2);
+        displacement = A * Math.exp(s1 * t) + B * Math.exp(s2 * t);
+      }
+
+      // Safety check for invalid displacement values
+      if (!isFinite(displacement)) {
+        displacement = 0;
       }
 
       const normalized = displacement / initialDisplacement;
@@ -84,6 +111,11 @@ export const SpringCurve = ({
 
       const x = horizontalPadding + (i / steps) * drawableWidth;
       const y = centerY + scaledDisplacement;
+
+      // Safety check for invalid coordinates
+      if (!isFinite(x) || !isFinite(y)) {
+        continue;
+      }
 
       if (i === 0) {
         springPath.moveTo(x, y);
