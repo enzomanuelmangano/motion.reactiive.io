@@ -10,11 +10,13 @@ import Animated, {
   withTiming,
   interpolateColor,
   useAnimatedStyle,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import { useStyles } from 'react-native-unistyles';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Color from 'color';
 import { useCallback } from 'react';
+import { Group } from '@shopify/react-native-skia';
 
 import { useUnistyles } from '../theme';
 
@@ -22,6 +24,8 @@ import { SpringCurve } from './spring-curve';
 import { BezierCurve } from './bezier-curve';
 
 type CurveCanvasProps = {
+  springActive: boolean;
+  bezierActive: boolean;
   springParams: {
     mass: SharedValue<number>;
     damping: SharedValue<number>;
@@ -75,6 +79,8 @@ const LightColors = {
 export const CurveCanvas = ({
   springParams,
   bezierParams,
+  springActive,
+  bezierActive,
 }: CurveCanvasProps) => {
   const { theme } = useStyles();
   const { isDark } = useUnistyles();
@@ -169,6 +175,14 @@ export const CurveCanvas = ({
     };
   });
 
+  const rSpringShow = useDerivedValue(() =>
+    withTiming(springActive ? 1 : 0, TimingConfig),
+  );
+
+  const rBezierShow = useDerivedValue(() =>
+    withTiming(bezierActive ? 1 : 0, TimingConfig),
+  );
+
   return (
     <GestureDetector gesture={composedGesture}>
       <Animated.View
@@ -180,42 +194,47 @@ export const CurveCanvas = ({
         ]}>
         <Animated.View style={{ flex: 1 }}>
           <Touchable.Canvas style={{ flex: 1 }}>
-            <BezierCurve
-              progress={bezierProgress}
-              width={canvasWidth}
-              height={canvasHeight}
-              x1={bezierParams.x1}
-              y1={bezierParams.y1}
-              x2={bezierParams.x2}
-              y2={bezierParams.y2}
-              color={theme.colors.primary.bezier}
-              strokeWidth={theme.strokeWidths.medium}
-              horizontalPadding={theme.spacing.xxl}
-              verticalPadding={theme.spacing.xxl}
-              onControlPointChange={(controlPoint, x, y) => {
-                'worklet';
-                // Convert pixel coordinates back to normalized values (0-1)
-                if (controlPoint === 'first') {
-                  bezierParams.x1.value = x;
-                  bezierParams.y1.value = y;
-                } else {
-                  bezierParams.x2.value = x;
-                  bezierParams.y2.value = y;
-                }
-              }}
-            />
-            <SpringCurve
-              progress={springProgress}
-              width={canvasWidth}
-              height={canvasHeight}
-              mass={springParams.mass}
-              damping={springParams.damping}
-              stiffness={springParams.stiffness}
-              horizontalPadding={theme.spacing.xxl}
-              verticalPadding={theme.spacing.xxl}
-              color={theme.colors.primary.spring}
-              strokeWidth={theme.strokeWidths.medium}
-            />
+            <Group opacity={rBezierShow}>
+              <BezierCurve
+                progress={bezierProgress}
+                width={canvasWidth}
+                height={canvasHeight}
+                x1={bezierParams.x1}
+                y1={bezierParams.y1}
+                x2={bezierParams.x2}
+                y2={bezierParams.y2}
+                color={theme.colors.primary.bezier}
+                strokeWidth={theme.strokeWidths.medium}
+                horizontalPadding={theme.spacing.xxl}
+                verticalPadding={theme.spacing.xxl}
+                onControlPointChange={(controlPoint, x, y) => {
+                  'worklet';
+                  // Convert pixel coordinates back to normalized values (0-1)
+                  if (controlPoint === 'first') {
+                    bezierParams.x1.value = x;
+                    bezierParams.y1.value = y;
+                  } else {
+                    bezierParams.x2.value = x;
+                    bezierParams.y2.value = y;
+                  }
+                }}
+              />
+            </Group>
+
+            <Group opacity={rSpringShow}>
+              <SpringCurve
+                progress={springProgress}
+                width={canvasWidth}
+                height={canvasHeight}
+                mass={springParams.mass}
+                damping={springParams.damping}
+                stiffness={springParams.stiffness}
+                horizontalPadding={theme.spacing.xxl}
+                verticalPadding={theme.spacing.xxl}
+                color={theme.colors.primary.spring}
+                strokeWidth={theme.strokeWidths.medium}
+              />
+            </Group>
           </Touchable.Canvas>
         </Animated.View>
       </Animated.View>

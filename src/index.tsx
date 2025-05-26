@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { useState } from 'react';
 
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
@@ -28,6 +29,9 @@ const App = () => {
 
   const showLegend = breakpoint !== 'xs';
 
+  const [springActive, setSpringActive] = useState(true);
+  const [bezierActive, setBezierActive] = useState(true);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -40,10 +44,19 @@ const App = () => {
             <View style={styles.mainContent}>
               <View style={styles.canvasSection}>
                 <CurveCanvas
+                  springActive={springActive}
+                  bezierActive={bezierActive}
                   springParams={springParams}
                   bezierParams={bezierParams}
                 />
-                {showLegend && <CurveLegend />}
+                {showLegend && (
+                  <CurveLegend
+                    springActive={springActive}
+                    bezierActive={bezierActive}
+                    onToggleSpring={() => setSpringActive(prev => !prev)}
+                    onToggleBezier={() => setBezierActive(prev => !prev)}
+                  />
+                )}
               </View>
 
               <View>
@@ -77,7 +90,7 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: theme.colors.background.primary,
   },
   scrollViewContent: {
-    flexGrow: 1,
+    paddingBottom: theme.spacing.xl,
   },
   content: {
     flex: 1,

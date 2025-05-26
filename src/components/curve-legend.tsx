@@ -1,30 +1,54 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
-export const CurveLegend = () => {
+type CurveLegendProps = {
+  onToggleSpring?: () => void;
+  onToggleBezier?: () => void;
+  springActive?: boolean;
+  bezierActive?: boolean;
+};
+
+export const CurveLegend = ({
+  onToggleSpring,
+  onToggleBezier,
+  springActive,
+  bezierActive,
+}: CurveLegendProps) => {
   const { styles, theme } = useStyles(stylesheet);
 
   return (
     <View style={styles.container}>
-      <View style={styles.legendItem}>
+      <TouchableOpacity
+        style={styles.legendItem}
+        onPress={onToggleSpring}
+        activeOpacity={0.8}>
         <View
           style={[
             styles.colorDot,
-            { backgroundColor: theme.colors.primary.spring },
+            {
+              backgroundColor: theme.colors.primary.spring,
+              opacity: springActive ? 1 : 0.5,
+            },
           ]}
         />
         <Text style={styles.legendText}>Spring Animation</Text>
-      </View>
-      <View style={styles.legendItem}>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.legendItem}
+        onPress={onToggleBezier}
+        activeOpacity={0.8}>
         <View
           style={[
             styles.colorDot,
-            { backgroundColor: theme.colors.primary.bezier },
+            {
+              backgroundColor: theme.colors.primary.bezier,
+              opacity: bezierActive ? 1 : 0.5,
+            },
           ]}
         />
         <Text style={styles.legendText}>Bezier Curve</Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

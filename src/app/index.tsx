@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import App from '..';
+import App from '../index';
 import { useUnistyles } from '../hooks/use-unistyles';
 
 const ClientOnly = ({ children }: { children: React.ReactNode }) => {
