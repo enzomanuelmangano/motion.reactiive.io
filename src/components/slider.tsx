@@ -1,13 +1,8 @@
 import { Text, View } from 'react-native';
 import { useRef, useCallback, useState, useEffect } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useAnimatedGestureHandler,
-  runOnJS,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import type { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 type SliderProps = {
@@ -19,10 +14,6 @@ type SliderProps = {
   step?: number;
   formatValue?: (value: number) => string;
   unit?: string;
-};
-
-type GestureContext = {
-  startX: number;
 };
 
 export const Slider = ({
@@ -102,19 +93,19 @@ export const Slider = ({
     };
   });
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: (event, context) => {
-      context.startX = event.x;
+  const panGesture = Gesture.Pan()
+    .onBegin(event => {
       runOnJS(updateValue)(event.x);
-    },
-    onActive: event => {
+    })
+    .onUpdate(event => {
       runOnJS(updateValue)(event.x);
-    },
-    onEnd: () => {},
-  });
+    })
+    .hitSlop({
+      top: 20,
+      bottom: 20,
+      left: 10,
+      right: 10,
+    });
 
   return (
     <View style={styles.container}>
@@ -123,14 +114,7 @@ export const Slider = ({
         <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
       </View>
 
-      <PanGestureHandler
-        onGestureEvent={gestureHandler}
-        hitSlop={{
-          top: 20,
-          bottom: 20,
-          left: 10,
-          right: 10,
-        }}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
@@ -153,7 +137,7 @@ export const Slider = ({
             />
           </View>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 };
