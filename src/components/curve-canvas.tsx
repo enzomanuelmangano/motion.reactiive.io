@@ -36,6 +36,17 @@ type CurveCanvasProps = {
   };
 };
 
+const TimingConfig = {
+  duration: 200,
+  easing: Easing.linear,
+};
+
+const SpringConfig = {
+  mass: 0.1,
+  stiffness: 17,
+  damping: 5,
+};
+
 export const CurveCanvas = ({
   springParams,
   bezierParams,
@@ -58,6 +69,7 @@ export const CurveCanvas = ({
   const bezierProgress = useSharedValue(0);
   const springProgress = useSharedValue(0);
   const isHovered = useSharedValue(0);
+  const isHoveredTiming = useSharedValue(0);
 
   const startAnimation = () => {
     cancelAnimation(bezierProgress);
@@ -99,12 +111,12 @@ export const CurveCanvas = ({
 
   const hoverGesture = Gesture.Hover()
     .onBegin(() => {
-      isHovered.value = withSpring(1, {
-        mass: 0.5,
-      });
+      isHoveredTiming.value = withTiming(1, TimingConfig);
+      isHovered.value = withSpring(1, SpringConfig);
     })
     .onEnd(() => {
-      isHovered.value = withSpring(0);
+      isHoveredTiming.value = withTiming(0, TimingConfig);
+      isHovered.value = withSpring(0, SpringConfig);
     });
 
   const composedGesture = Gesture.Simultaneous(tapGesture, hoverGesture);
@@ -114,12 +126,12 @@ export const CurveCanvas = ({
 
   const baseBorder = theme.colors.border.primary;
   const baseBorderSecondary = Color(baseBorder)
-    [isDark ? 'lighten' : 'darken'](0.1)
+    [isDark ? 'lighten' : 'darken'](0.5)
     .toString();
 
   const animatedStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
-      isHovered.value,
+      isHoveredTiming.value,
       [0, 1],
       [basePrimary, baseSecondary],
     );
@@ -131,7 +143,7 @@ export const CurveCanvas = ({
       borderRadius: 12,
       borderWidth: theme.strokeWidths.thin,
       borderColor: interpolateColor(
-        isHovered.value,
+        isHoveredTiming.value,
         [0, 1],
         [baseBorder, baseBorderSecondary],
       ),
@@ -141,12 +153,18 @@ export const CurveCanvas = ({
   const rCanvasStyle = useAnimatedStyle(() => {
     return {
       flex: 1,
-      transform: [{ scale: interpolate(isHovered.value, [0, 1], [1, 0.98]) }],
+      transform: [{ scale: interpolate(isHovered.value, [0, 1], [1, 0.95]) }],
     };
   });
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View style={animatedStyle}>
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            cursor: 'pointer',
+          },
+        ]}>
         <Animated.View style={rCanvasStyle}>
           <Canvas style={{ flex: 1 }}>
             <BezierCurve
