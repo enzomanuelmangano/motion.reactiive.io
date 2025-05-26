@@ -17,6 +17,8 @@ type PressableHighlightProps = {
   activeBackgroundColor?: string;
   inactiveBackgroundColor?: string;
   isActive?: boolean;
+  minScale?: number;
+  maxScale?: number;
 };
 
 const ActiveSpringConfig = {
@@ -33,6 +35,8 @@ export const PressableHighlight = ({
   activeBackgroundColor = 'rgba(255,255,255,0.03)',
   inactiveBackgroundColor = 'rgba(255,255,255,0)',
   isActive = false,
+  minScale = 1,
+  maxScale = 1.05,
 }: PressableHighlightProps) => {
   const isHoveredProgress = useSharedValue(0);
   const isHoveredSpringProgress = useSharedValue(0);
@@ -57,7 +61,11 @@ export const PressableHighlight = ({
     return {
       transform: [
         {
-          scale: interpolate(isHoveredSpringProgress.value, [0, 1], [1, 1.05]),
+          scale: interpolate(
+            isHoveredSpringProgress.value,
+            [0, 1],
+            [minScale, maxScale],
+          ),
         },
       ],
     };

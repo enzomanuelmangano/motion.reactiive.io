@@ -23,7 +23,7 @@ const lightColors = {
 
   // Background Colors (inverted for light theme)
   background: {
-    primary: '#fafafa', // Main app background
+    primary: '#f8f8f8', // Main app background
     secondary: '#f8f9fa', // Canvas background
     overlay: 'rgba(0, 0, 0, 0.05)', // Controls overlay
     surface: 'rgba(0, 0, 0, 0.03)', // Tab container background

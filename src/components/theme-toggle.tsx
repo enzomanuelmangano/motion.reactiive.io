@@ -1,5 +1,4 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -14,6 +13,8 @@ export const ThemeToggle: React.FC = () => {
   return (
     <PressableHighlight
       style={styles.container}
+      minScale={0.9}
+      maxScale={1.05}
       contentStyle={{
         alignItems: 'center',
         justifyContent: 'center',

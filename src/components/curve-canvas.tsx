@@ -62,6 +62,16 @@ const useCanvasDimensions = () => {
   };
 };
 
+const DarkColors = {
+  basePrimary: 'rgba(0,0,0,0.0)',
+  baseSecondary: 'rgba(0,0,0,0.03)',
+};
+
+const LightColors = {
+  basePrimary: 'rgba(255,255,255,0.1)',
+  baseSecondary: 'rgba(255,255,255,0.0)',
+};
+
 export const CurveCanvas = ({
   springParams,
   bezierParams,
@@ -127,12 +137,14 @@ export const CurveCanvas = ({
 
   const composedGesture = Gesture.Simultaneous(tapGesture, hoverGesture);
 
-  const basePrimary = 'rgba(255,255,255,0.0)';
-  const baseSecondary = 'rgba(255,255,255,0.03)';
+  const basePrimary = isDark ? DarkColors.basePrimary : LightColors.basePrimary;
+  const baseSecondary = isDark
+    ? DarkColors.baseSecondary
+    : LightColors.baseSecondary;
 
   const baseBorder = theme.colors.border.primary;
   const baseBorderSecondary = Color(baseBorder)
-    [isDark ? 'lighten' : 'darken'](isDark ? 0.5 : 0.1)
+    [isDark ? 'lighten' : 'darken'](isDark ? 0.5 : 0.05)
     .toString();
 
   const animatedStyle = useAnimatedStyle(() => {
