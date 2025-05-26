@@ -5,6 +5,7 @@ export { Slider } from './slider';
 // Animation-specific controls
 export { SpringControls } from './spring-controls';
 export { TimingControls } from './timing-controls';
+export { BezierControls } from './bezier-controls';
 
 // Backward compatibility
 export { SpringSlider } from './spring-slider';

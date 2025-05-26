@@ -37,25 +37,26 @@ export const Controls: React.FC<ControlsProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    maxWidth: 400,
-    marginVertical: 20,
-    padding: 15,
-    backgroundColor: '#111',
-    borderRadius: 12,
+    maxWidth: 380,
+    marginVertical: 12,
+    padding: 12,
+    backgroundColor: 'rgba(17, 17, 17, 0.6)',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.03)',
   },
   title: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
     textAlign: 'center',
+    opacity: 0.8,
   },
   controlsWrapper: {
     width: '100%',
   },
   controlItem: {
-    marginVertical: 2,
+    marginVertical: 1,
   },
 });

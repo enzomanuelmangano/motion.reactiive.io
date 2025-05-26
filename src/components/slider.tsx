@@ -93,7 +93,7 @@ export const Slider = ({
   const thumbStyle = useAnimatedStyle(() => {
     return {
       left: `${getPercentage(localValue)}%`,
-      transform: [{ translateX: -8 }], // Half the thumb width to center it
+      transform: [{ translateX: -7 }], // Half the thumb width to center it
     };
   });
 
@@ -118,8 +118,10 @@ export const Slider = ({
         <Text style={styles.value}>{formatDisplayValue(localValue)}</Text>
       </View>
 
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View>
+      <PanGestureHandler
+        onGestureEvent={gestureHandler}
+        hitSlop={{ top: 20, bottom: 20, left: 10, right: 10 }}>
+        <Animated.View style={styles.gestureContainer}>
           <View
             style={styles.track}
             onLayout={({ nativeEvent }) => {
@@ -135,7 +137,6 @@ export const Slider = ({
             <Animated.View
               style={[styles.thumb, { backgroundColor: color }, thumbStyle]}
             />
-            <View style={styles.touchArea} />
           </View>
         </Animated.View>
       </PanGestureHandler>
@@ -146,45 +147,48 @@ export const Slider = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 10,
+    marginVertical: 6,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   label: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
+    fontWeight: '500',
   },
   value: {
     color: '#fff',
-    fontSize: 14,
-    opacity: 0.7,
+    fontSize: 13,
+    opacity: 0.6,
+    fontFamily: 'monospace',
+  },
+  gestureContainer: {
+    paddingVertical: 12,
   },
   track: {
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 2,
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 1.5,
     overflow: 'visible',
     position: 'relative',
   },
   progress: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 1.5,
   },
   thumb: {
     position: 'absolute',
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    top: -6,
-  },
-  touchArea: {
-    position: 'absolute',
-    top: -20,
-    bottom: -20,
-    left: 0,
-    right: 0,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    top: -5.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
   },
 });

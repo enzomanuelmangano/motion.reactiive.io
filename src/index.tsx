@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { CurveCanvas } from './components/curve-canvas';
 import { SpringControls } from './components/spring-controls';
+import { BezierControls } from './components/bezier-controls';
 
 const App = () => {
   const springParams = {
@@ -34,6 +35,13 @@ const App = () => {
             mass={springParams.mass}
             damping={springParams.damping}
             stiffness={springParams.stiffness}
+          />
+          <BezierControls
+            x1={bezierParams.x1}
+            y1={bezierParams.y1}
+            x2={bezierParams.x2}
+            y2={bezierParams.y2}
+            duration={bezierParams.duration}
           />
         </View>
       </View>
