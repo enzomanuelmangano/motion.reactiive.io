@@ -47,24 +47,30 @@ const SpringConfig = {
   damping: 5,
 };
 
+const useCanvasDimensions = () => {
+  const { theme } = useStyles();
+  const { width: windowWidth } = useWindowDimensions();
+
+  const canvasWidth = Math.min(
+    windowWidth - theme.spacing.lg * 2,
+    theme.dimensions.canvas.maxWidth,
+  );
+
+  return {
+    canvasWidth,
+    canvasHeight: canvasWidth / theme.dimensions.canvas.aspectRatio,
+  };
+};
+
 export const CurveCanvas = ({
   springParams,
   bezierParams,
 }: CurveCanvasProps) => {
   const { theme } = useStyles();
   const { isDark } = useUnistyles();
-  const { width: windowWidth } = useWindowDimensions();
 
   // Calculate responsive dimensions
-  const canvasWidth = Math.min(
-    windowWidth - theme.spacing.lg * 2,
-    theme.dimensions.canvas.maxWidth,
-  );
-  const { aspectRatio } = theme.dimensions.canvas;
-  const canvasHeight = Math.min(
-    canvasWidth / aspectRatio,
-    theme.dimensions.canvas.maxHeight,
-  );
+  const { canvasWidth, canvasHeight } = useCanvasDimensions();
 
   const bezierProgress = useSharedValue(0);
   const springProgress = useSharedValue(0);
