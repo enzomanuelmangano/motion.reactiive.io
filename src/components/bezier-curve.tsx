@@ -200,12 +200,30 @@ export const BezierCurve = ({
         style="stroke"
         opacity={0.2}
       />
-      <Touchable.Circle
+      <Circle
         cx={cp1x}
         cy={cp1y}
         r={strokeWidth * 2}
         color={color}
         opacity={0.35}
+      />
+      <Circle
+        cx={cp2x}
+        cy={cp2y}
+        r={strokeWidth * 2}
+        color={color}
+        opacity={0.35}
+      />
+      {/*
+       * The Touchable Circles are invisible (opacity 0) but remain interactive,
+       * providing larger hit areas for dragging the control points
+       */}
+      <Touchable.Circle
+        cx={cp1x}
+        cy={cp1y}
+        r={strokeWidth * 6}
+        color={color}
+        opacity={0}
         onStart={touchInfo => {
           onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
         }}
@@ -216,9 +234,9 @@ export const BezierCurve = ({
       <Touchable.Circle
         cx={cp2x}
         cy={cp2y}
-        r={strokeWidth * 2}
+        r={strokeWidth * 6}
         color={color}
-        opacity={0.35}
+        opacity={0}
         onStart={touchInfo => {
           onUpdateControlPoint?.('second', touchInfo.x, touchInfo.y);
         }}
