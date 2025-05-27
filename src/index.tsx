@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { useState } from 'react';
 
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
@@ -29,8 +28,8 @@ const App = () => {
 
   const showLegend = breakpoint !== 'xs';
 
-  const [springActive, setSpringActive] = useState(true);
-  const [bezierActive, setBezierActive] = useState(true);
+  const springActive = useSharedValue(true);
+  const bezierActive = useSharedValue(true);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -53,8 +52,12 @@ const App = () => {
                   <CurveLegend
                     springActive={springActive}
                     bezierActive={bezierActive}
-                    onToggleSpring={() => setSpringActive(prev => !prev)}
-                    onToggleBezier={() => setBezierActive(prev => !prev)}
+                    onToggleSpring={() =>
+                      (springActive.value = !springActive.value)
+                    }
+                    onToggleBezier={() =>
+                      (bezierActive.value = !bezierActive.value)
+                    }
                   />
                 )}
               </View>

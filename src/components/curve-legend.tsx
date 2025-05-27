@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import type { SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 type CurveLegendProps = {
   onToggleSpring?: () => void;
   onToggleBezier?: () => void;
-  springActive?: boolean;
-  bezierActive?: boolean;
+  springActive: SharedValue<boolean>;
+  bezierActive: SharedValue<boolean>;
 };
 
 export const CurveLegend = ({
@@ -17,19 +19,27 @@ export const CurveLegend = ({
 }: CurveLegendProps) => {
   const { styles, theme } = useStyles(stylesheet);
 
+  const rSpringStyle = useAnimatedStyle(() => ({
+    opacity: springActive.value ? 1 : 0.5,
+  }));
+
+  const rBezierStyle = useAnimatedStyle(() => ({
+    opacity: bezierActive.value ? 1 : 0.5,
+  }));
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.legendItem}
         onPress={onToggleSpring}
         activeOpacity={0.8}>
-        <View
+        <Animated.View
           style={[
             styles.colorDot,
             {
               backgroundColor: theme.colors.primary.spring,
-              opacity: springActive ? 1 : 0.5,
             },
+            rSpringStyle,
           ]}
         />
         <Text style={styles.legendText}>Spring Animation</Text>
@@ -38,13 +48,13 @@ export const CurveLegend = ({
         style={styles.legendItem}
         onPress={onToggleBezier}
         activeOpacity={0.8}>
-        <View
+        <Animated.View
           style={[
             styles.colorDot,
             {
               backgroundColor: theme.colors.primary.bezier,
-              opacity: bezierActive ? 1 : 0.5,
             },
+            rBezierStyle,
           ]}
         />
         <Text style={styles.legendText}>Bezier Curve</Text>
