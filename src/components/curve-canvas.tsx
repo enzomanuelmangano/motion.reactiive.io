@@ -1,5 +1,5 @@
 import Touchable from 'react-native-skia-gesture';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   cancelAnimation,
@@ -19,6 +19,7 @@ import { memo, useCallback } from 'react';
 import { Group } from '@shopify/react-native-skia';
 
 import { useUnistyles } from '../theme';
+import { useCanvasDimensions } from '../hooks/use-canvas-dimensions';
 
 import { SpringCurve } from './spring-curve';
 import { BezierCurve } from './bezier-curve';
@@ -49,21 +50,6 @@ const SpringConfig = {
   mass: 0.1,
   stiffness: 30,
   damping: 5,
-};
-
-const useCanvasDimensions = () => {
-  const { theme } = useStyles();
-  const { width: windowWidth } = useWindowDimensions();
-
-  const canvasWidth = Math.min(
-    windowWidth - theme.spacing.lg * 2,
-    theme.dimensions.canvas.maxWidth,
-  );
-
-  return {
-    canvasWidth,
-    canvasHeight: canvasWidth / theme.dimensions.canvas.aspectRatio,
-  };
 };
 
 const DarkColors = {

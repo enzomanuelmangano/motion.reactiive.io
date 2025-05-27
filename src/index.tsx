@@ -8,9 +8,11 @@ import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
 import { GitHubRepo, ThemeToggle } from './components/theme-toggle';
+import { useCanvasDimensions } from './hooks/use-canvas-dimensions';
 
 const App = () => {
-  const { styles, breakpoint } = useStyles(stylesheet);
+  const { styles, breakpoint, theme } = useStyles(stylesheet);
+  const { canvasWidth } = useCanvasDimensions();
 
   const springParams = {
     mass: useSharedValue(1.5),
@@ -26,7 +28,8 @@ const App = () => {
     duration: useSharedValue(1000),
   };
 
-  const showLegend = breakpoint !== 'xs';
+  const showLegend =
+    breakpoint !== 'xs' && breakpoint !== 'sm' && breakpoint !== 'md';
 
   const springActive = useSharedValue(true);
   const bezierActive = useSharedValue(true);
@@ -62,13 +65,20 @@ const App = () => {
                 )}
               </View>
 
-              <View>
-                <View style={styles.controlsSection}>
-                  <UnifiedControls
-                    springParams={springParams}
-                    bezierParams={bezierParams}
-                  />
-                </View>
+              <View
+                style={[
+                  styles.controlsSection,
+                  {
+                    width: Math.min(
+                      canvasWidth,
+                      theme.dimensions.container.maxWidth.controls,
+                    ),
+                  },
+                ]}>
+                <UnifiedControls
+                  springParams={springParams}
+                  bezierParams={bezierParams}
+                />
               </View>
             </View>
           </View>
@@ -139,7 +149,6 @@ const stylesheet = createStyleSheet(theme => ({
     justifyContent: 'center',
   },
   controlsSection: {
-    width: theme.dimensions.container.maxWidth.controls,
     flexShrink: 0,
     justifyContent: 'flex-start',
     alignItems: 'center',

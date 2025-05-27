@@ -68,33 +68,33 @@ export const BezierCurve = ({
 
   const cp1x = useDerivedValue(() => {
     return startX + x1.value * drawableWidth;
-  });
+  }, [startX, x1, drawableWidth]);
 
   const cp1y = useDerivedValue(() => {
     return startY - y1.value * drawableHeight;
-  });
+  }, [startY, y1, drawableHeight]);
 
   const cp2x = useDerivedValue(() => {
     return endX - (1 - x2.value) * drawableWidth;
-  });
+  }, [endX, x2, drawableWidth]);
 
   const cp2y = useDerivedValue(() => {
     return endY + (1 - y2.value) * drawableHeight;
-  });
+  }, [endY, y2, drawableHeight]);
 
   const firstControlPoint = useDerivedValue(() => {
     return {
       x: cp1x.value,
       y: cp1y.value,
     };
-  });
+  }, [cp1x, cp1y]);
 
   const secondControlPoint = useDerivedValue(() => {
     return {
       x: cp2x.value,
       y: cp2y.value,
     };
-  });
+  }, [cp2x, cp2y]);
 
   const path = useDerivedValue(() => {
     const bezierPath = Skia.Path.Make();
