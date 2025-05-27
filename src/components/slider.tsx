@@ -116,6 +116,7 @@ export const Slider = ({
       'worklet';
       runOnJS(updateValue)(event.x);
     })
+    .shouldCancelWhenOutside(true)
     .hitSlop({
       top: 20,
       bottom: 20,

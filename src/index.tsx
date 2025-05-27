@@ -1,7 +1,10 @@
-import { View, ScrollView } from 'react-native';
+import { View } from 'react-native';
+import {
+  ScrollView,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 import { CurveCanvas } from './components/curve-canvas';
