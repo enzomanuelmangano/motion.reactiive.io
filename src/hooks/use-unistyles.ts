@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
+import { Platform } from 'react-native';
 import { useStyles, UnistylesRuntime } from 'react-native-unistyles';
 
 const ThemeAtom = atomWithStorage<'dark' | 'light'>(
@@ -7,12 +8,21 @@ const ThemeAtom = atomWithStorage<'dark' | 'light'>(
   'dark',
   {
     getItem: key => {
+      if (Platform.OS !== 'web') {
+        return 'dark';
+      }
       return (localStorage.getItem(key) ?? 'dark') as 'dark' | 'light';
     },
     setItem: (key, value) => {
+      if (Platform.OS !== 'web') {
+        return;
+      }
       localStorage.setItem(key, value);
     },
     removeItem: key => {
+      if (Platform.OS !== 'web') {
+        return;
+      }
       localStorage.removeItem(key);
     },
   },
