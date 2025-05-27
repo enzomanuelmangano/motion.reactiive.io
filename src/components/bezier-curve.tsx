@@ -52,9 +52,11 @@ const TouchableControlPoint = React.memo<TouchableControlPointProps>(
         color={color}
         opacity={0}
         onStart={touchInfo => {
+          'worklet';
           onUpdateControlPoint(controlPoint, touchInfo.x, touchInfo.y);
         }}
         onActive={touchInfo => {
+          'worklet';
           onUpdateControlPoint(controlPoint, touchInfo.x, touchInfo.y);
         }}
       />
@@ -187,6 +189,7 @@ export const BezierCurve = ({
 
   const onUpdateControlPoint = useCallback(
     (controlPoint: 'first' | 'second', x: number, y: number) => {
+      'worklet';
       // Remap from absolute coordinates to normalized 0-1 range
       const _x = clamp((x - horizontalPadding) / drawableWidth, 0, 1);
       const _y = clamp((startY - y) / drawableHeight, 0, 1);
