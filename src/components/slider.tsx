@@ -59,7 +59,13 @@ export const Slider = ({
     [localValue],
   );
 
-  const getPercentage = (val: number) => ((val - min) / (max - min)) * 100;
+  const getPercentage = useCallback(
+    (val: number) => {
+      'worklet';
+      return ((val - min) / (max - min)) * 100;
+    },
+    [min, max],
+  );
 
   const snapToStep = useCallback(
     (val: number) => {

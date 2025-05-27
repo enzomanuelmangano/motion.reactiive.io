@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "index",
   "scheme": "motion",
+  "description": "Interactive tool for exploring and approximating the relationship between easing curves and spring animations.",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios --device",
     "web": "expo start --web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "tsc": "tsc --noEmit",
     "predeploy": "expo export -p web && node scripts/copy-canvaskit-in-dist.js",
-    "postinstall": "yarn setup-skia-web && node scripts/path-fs-canvaskit-postinstall.js"
+    "postinstall": "yarn setup-skia-web && node scripts/path-fs-canvaskit-postinstall.js",
+    "prebuild:clean": "npx expo prebuild --clean"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",

@@ -12,9 +12,11 @@ import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
 import { GitHubRepo, ThemeToggle } from './components/theme-toggle';
 import { useCanvasDimensions } from './hooks/use-canvas-dimensions';
+import { useUnistyles } from './theme';
 
 const App = () => {
   const { styles, breakpoint, theme } = useStyles(stylesheet);
+  const { isDark } = useUnistyles();
   const { canvasWidth } = useCanvasDimensions();
 
   const springParams = {
@@ -38,62 +40,60 @@ const App = () => {
   const bezierActive = useSharedValue(true);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-          showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>
-            <View style={styles.mainContent}>
-              <View style={styles.canvasSection}>
-                <CurveCanvas
+    <View style={styles.container}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
+          <View style={styles.mainContent}>
+            <View style={styles.canvasSection}>
+              <CurveCanvas
+                springActive={springActive}
+                bezierActive={bezierActive}
+                springParams={springParams}
+                bezierParams={bezierParams}
+              />
+              {showLegend && (
+                <CurveLegend
                   springActive={springActive}
                   bezierActive={bezierActive}
-                  springParams={springParams}
-                  bezierParams={bezierParams}
+                  onToggleSpring={() =>
+                    (springActive.value = !springActive.value)
+                  }
+                  onToggleBezier={() =>
+                    (bezierActive.value = !bezierActive.value)
+                  }
                 />
-                {showLegend && (
-                  <CurveLegend
-                    springActive={springActive}
-                    bezierActive={bezierActive}
-                    onToggleSpring={() =>
-                      (springActive.value = !springActive.value)
-                    }
-                    onToggleBezier={() =>
-                      (bezierActive.value = !bezierActive.value)
-                    }
-                  />
-                )}
-              </View>
+              )}
+            </View>
 
-              <View
-                style={[
-                  styles.controlsSection,
-                  {
-                    width: Math.min(
-                      canvasWidth,
-                      theme.dimensions.container.maxWidth.controls,
-                    ),
-                  },
-                ]}>
-                <UnifiedControls
-                  springParams={springParams}
-                  bezierParams={bezierParams}
-                />
-              </View>
+            <View
+              style={[
+                styles.controlsSection,
+                {
+                  width: Math.min(
+                    canvasWidth,
+                    theme.dimensions.container.maxWidth.controls,
+                  ),
+                },
+              ]}>
+              <UnifiedControls
+                springParams={springParams}
+                bezierParams={bezierParams}
+              />
             </View>
           </View>
-        </ScrollView>
-
-        {/* Theme toggle positioned at bottom right */}
-        <View style={styles.themeToggleContainer}>
-          <GitHubRepo />
-          <ThemeToggle />
         </View>
+      </ScrollView>
+
+      {/* Theme toggle positioned at bottom right */}
+      <View style={styles.themeToggleContainer}>
+        <GitHubRepo />
+        <ThemeToggle />
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

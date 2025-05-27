@@ -4,5 +4,12 @@ export const useConstCallback = <Args extends unknown[], Return>(
   fn: (...args: Args) => Return,
 ): ((...args: Args) => Return) => {
   const ref = useRef<(...args: Args) => Return>(fn);
-  return useCallback((...args: Args) => ref.current(...args), [ref]);
+
+  return useCallback(
+    (...args: Args) => {
+      'worklet';
+      return ref.current(...args);
+    },
+    [ref],
+  );
 };
