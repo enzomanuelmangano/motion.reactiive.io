@@ -1,5 +1,5 @@
 import { Path, Skia, Group, Circle, Line } from '@shopify/react-native-skia';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   clamp,
   useDerivedValue,
@@ -8,6 +8,7 @@ import {
 import Touchable from 'react-native-skia-gesture';
 
 import { useAnimateThroughPath } from '../hooks/use-animate-through-path';
+import { useConstCallback } from '../hooks/use-const-callback';
 
 type BezierCurveProps = {
   width: number;
@@ -27,6 +28,41 @@ type BezierCurveProps = {
     y: number,
   ) => void;
 };
+
+type TouchableControlPointProps = {
+  cx: SharedValue<number>;
+  cy: SharedValue<number>;
+  r: number;
+  color: string;
+  controlPoint: 'first' | 'second';
+  onUpdateControlPoint: (
+    controlPoint: 'first' | 'second',
+    x: number,
+    y: number,
+  ) => void;
+};
+
+const TouchableControlPoint = React.memo<TouchableControlPointProps>(
+  ({ cx, cy, r, color, controlPoint, onUpdateControlPoint }) => {
+    return (
+      <Touchable.Circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        color={color}
+        opacity={0}
+        onStart={touchInfo => {
+          onUpdateControlPoint(controlPoint, touchInfo.x, touchInfo.y);
+        }}
+        onActive={touchInfo => {
+          onUpdateControlPoint(controlPoint, touchInfo.x, touchInfo.y);
+        }}
+      />
+    );
+  },
+);
+
+TouchableControlPoint.displayName = 'TouchableControlPoint';
 
 export const BezierCurve = ({
   width,
@@ -140,29 +176,47 @@ export const BezierCurve = ({
     return bezierPath;
   }, [width, height, x1, y1, x2, y2, horizontalPadding, verticalPadding]);
 
-  const point = useAnimateThroughPath({ path, progress });
+  const animateThroughPathParams = useMemo(() => {
+    return {
+      path,
+      progress,
+    };
+  }, [path, progress]);
 
-  const onUpdateControlPoint = (
-    controlPoint: 'first' | 'second',
-    x: number,
-    y: number,
-  ) => {
-    // Remap from absolute coordinates to normalized 0-1 range
-    const _x = clamp((x - horizontalPadding) / drawableWidth, 0, 1);
-    const _y = clamp((startY - y) / drawableHeight, 0, 1);
+  const point = useAnimateThroughPath(animateThroughPathParams);
 
-    // Update the original SharedValues, not the derived ones
-    if (controlPoint === 'first') {
-      x1.value = _x;
-      y1.value = _y;
-    } else {
-      x2.value = _x;
-      y2.value = _y;
-    }
+  const onUpdateControlPoint = useCallback(
+    (controlPoint: 'first' | 'second', x: number, y: number) => {
+      // Remap from absolute coordinates to normalized 0-1 range
+      const _x = clamp((x - horizontalPadding) / drawableWidth, 0, 1);
+      const _y = clamp((startY - y) / drawableHeight, 0, 1);
 
-    // Also call the callback if provided
-    onControlPointChange?.(controlPoint, _x, _y);
-  };
+      // Update the original SharedValues, not the derived ones
+      if (controlPoint === 'first') {
+        x1.value = _x;
+        y1.value = _y;
+      } else {
+        x2.value = _x;
+        y2.value = _y;
+      }
+
+      // Also call the callback if provided
+      onControlPointChange?.(controlPoint, _x, _y);
+    },
+    [
+      drawableWidth,
+      drawableHeight,
+      horizontalPadding,
+      startY,
+      x1,
+      y1,
+      x2,
+      y2,
+      onControlPointChange,
+    ],
+  );
+
+  const onUpdateControlPointConst = useConstCallback(onUpdateControlPoint);
 
   return (
     <Group>
@@ -218,31 +272,21 @@ export const BezierCurve = ({
        * The Touchable Circles are invisible (opacity 0) but remain interactive,
        * providing larger hit areas for dragging the control points
        */}
-      <Touchable.Circle
+      <TouchableControlPoint
         cx={cp1x}
         cy={cp1y}
         r={strokeWidth * 6}
         color={color}
-        opacity={0}
-        onStart={touchInfo => {
-          onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
-        }}
-        onActive={touchInfo => {
-          onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
-        }}
+        controlPoint="first"
+        onUpdateControlPoint={onUpdateControlPointConst}
       />
-      <Touchable.Circle
+      <TouchableControlPoint
         cx={cp2x}
         cy={cp2y}
         r={strokeWidth * 6}
         color={color}
-        opacity={0}
-        onStart={touchInfo => {
-          onUpdateControlPoint?.('second', touchInfo.x, touchInfo.y);
-        }}
-        onActive={touchInfo => {
-          onUpdateControlPoint?.('second', touchInfo.x, touchInfo.y);
-        }}
+        controlPoint="second"
+        onUpdateControlPoint={onUpdateControlPointConst}
       />
     </Group>
   );
