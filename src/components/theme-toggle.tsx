@@ -15,6 +15,8 @@ export const ThemeToggle: React.FC = () => {
   return (
     <PressableHighlight
       style={styles.container}
+      activeBackgroundColor={theme.colors.background.primary}
+      inactiveBackgroundColor={theme.colors.background.primary}
       minScale={0.9}
       maxScale={1.05}
       contentStyle={{
@@ -60,5 +62,6 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: 22,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
+    backgroundColor: theme.colors.background.primary,
   },
 }));
