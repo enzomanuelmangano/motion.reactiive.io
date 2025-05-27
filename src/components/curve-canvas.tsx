@@ -165,12 +165,12 @@ export const CurveCanvas = memo(
     });
 
     const rSpringShow = useDerivedValue(
-      () => withTiming(springActive.value ? 1 : 0, TimingConfig),
+      () => withTiming(springActive.get() ? 1 : 0, TimingConfig),
       [springActive],
     );
 
     const rBezierShow = useDerivedValue(
-      () => withTiming(bezierActive.value ? 1 : 0, TimingConfig),
+      () => withTiming(bezierActive.get() ? 1 : 0, TimingConfig),
       [bezierActive],
     );
 

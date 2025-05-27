@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
@@ -130,15 +130,19 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
 
   const activeConfigs =
     activeTab === 'spring' ? springSliderConfigs : bezierSliderConfigs;
+
   const controlItems = useMemo(
     () => createSliderControls(activeConfigs),
     [activeConfigs],
   );
 
-  const handleTabSwitch = (tab: 'spring' | 'bezier') => {
-    if (tab === activeTab) return;
-    setActiveTab(tab);
-  };
+  const handleTabSwitch = useCallback(
+    (tab: 'spring' | 'bezier') => {
+      if (tab === activeTab) return;
+      setActiveTab(tab);
+    },
+    [activeTab],
+  );
 
   return (
     <View style={styles.container}>

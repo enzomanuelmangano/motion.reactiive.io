@@ -1,8 +1,5 @@
 import { View } from 'react-native';
-import {
-  ScrollView,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { useSharedValue } from 'react-native-reanimated';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -59,12 +56,8 @@ const App = () => {
                 <CurveLegend
                   springActive={springActive}
                   bezierActive={bezierActive}
-                  onToggleSpring={() =>
-                    (springActive.value = !springActive.value)
-                  }
-                  onToggleBezier={() =>
-                    (bezierActive.value = !bezierActive.value)
-                  }
+                  onToggleSpring={() => springActive.set(!springActive.value)}
+                  onToggleBezier={() => bezierActive.set(!bezierActive.value)}
                 />
               )}
             </View>

@@ -35,7 +35,7 @@ export const Slider = ({
   const { styles, theme } = useStyles(stylesheet);
   const trackWidthRef = useRef(0);
   const { isMobile } = useUnistyles();
-  const [localValue, setLocalValue] = useState(value.value);
+  const [localValue, setLocalValue] = useState(() => value.get());
   const [isEditing, setIsEditing] = useState(false);
   const [textInputValue, setTextInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
@@ -122,12 +122,12 @@ export const Slider = ({
       'worklet';
       runOnJS(updateValue)(event.x);
     })
-    .shouldCancelWhenOutside(true)
+    .shouldCancelWhenOutside(false)
     .hitSlop({
-      top: 20,
-      bottom: 20,
-      left: 10,
-      right: 10,
+      top: 10,
+      bottom: 10,
+      left: 20,
+      right: 20,
     });
 
   const handleValuePress = () => {
@@ -245,7 +245,6 @@ const stylesheet = createStyleSheet(theme => ({
     height: theme.dimensions.slider.thumbSize,
     borderRadius: theme.borderRadius.lg,
     top: theme.dimensions.slider.thumbOffset,
-    ...theme.shadows.small,
   },
   input: {
     color: theme.colors.text.primary,
