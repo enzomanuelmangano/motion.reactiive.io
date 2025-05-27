@@ -4,7 +4,7 @@ Interactive tool for exploring and approximating the relationship between easing
 
 The playground is available at [motion.reactiive.io](https://motion.reactiive.io).
 
-
+https://github.com/user-attachments/assets/c5087b3f-fb41-4e32-bd53-bc3f7dd147c8
 
 ## Created with Expo 🤸‍♂️
 
