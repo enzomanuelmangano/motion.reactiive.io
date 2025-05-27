@@ -200,8 +200,6 @@ export const BezierCurve = ({
         style="stroke"
         opacity={0.2}
       />
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-      {/* @ts-ignore */}
       <Touchable.Circle
         cx={cp1x}
         cy={cp1y}
@@ -215,8 +213,6 @@ export const BezierCurve = ({
           onUpdateControlPoint?.('first', touchInfo.x, touchInfo.y);
         }}
       />
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-      {/* @ts-ignore */}
       <Touchable.Circle
         cx={cp2x}
         cy={cp2y}
