@@ -39,6 +39,8 @@ type CurveCanvasProps = {
     y2: SharedValue<number>;
     duration: SharedValue<number>;
   };
+  bezierProgress: SharedValue<number>;
+  springProgress: SharedValue<number>;
 };
 
 const TimingConfig = {
@@ -68,6 +70,8 @@ export const CurveCanvas = memo(
     bezierParams,
     springActive,
     bezierActive,
+    bezierProgress,
+    springProgress,
   }: CurveCanvasProps) => {
     const { theme } = useStyles();
     const { isDark } = useUnistyles();
@@ -75,8 +79,6 @@ export const CurveCanvas = memo(
     // Calculate responsive dimensions
     const { canvasWidth, canvasHeight } = useCanvasDimensions();
 
-    const bezierProgress = useSharedValue(0);
-    const springProgress = useSharedValue(0);
     const isHovered = useSharedValue(0);
     const isHoveredTiming = useSharedValue(0);
 

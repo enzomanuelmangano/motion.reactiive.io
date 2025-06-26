@@ -7,7 +7,7 @@ const packageJsonPath = path.join(
   '..',
   'node_modules',
   'canvaskit-wasm',
-  'package.json'
+  'package.json',
 );
 const packageJson = require(packageJsonPath);
 

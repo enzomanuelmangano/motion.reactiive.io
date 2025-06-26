@@ -3,7 +3,15 @@ const path = require('path');
 
 // Define source and destination paths
 const sourceFile = path.join(__dirname, '..', 'public', 'canvaskit.wasm');
-const destDir = path.join(__dirname, '..', 'dist', '_expo', 'static', 'js', 'web');
+const destDir = path.join(
+  __dirname,
+  '..',
+  'dist',
+  '_expo',
+  'static',
+  'js',
+  'web',
+);
 const destFile = path.join(destDir, 'canvaskit.wasm');
 
 // Create destination directory if it doesn't exist

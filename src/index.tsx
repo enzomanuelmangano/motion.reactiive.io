@@ -7,6 +7,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { CurveCanvas } from './components/curve-canvas';
 import { UnifiedControls } from './components/unified-controls';
 import { CurveLegend } from './components/curve-legend';
+import { AnimatedCircles } from './components/animated-circles';
 import { GitHubRepo, ThemeToggle } from './components/theme-toggle';
 import { useCanvasDimensions } from './hooks/use-canvas-dimensions';
 import { useUnistyles } from './theme';
@@ -36,6 +37,9 @@ const App = () => {
   const springActive = useSharedValue(true);
   const bezierActive = useSharedValue(true);
 
+  const bezierProgress = useSharedValue(0);
+  const springProgress = useSharedValue(0);
+
   return (
     <View style={styles.container}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -51,6 +55,8 @@ const App = () => {
                 bezierActive={bezierActive}
                 springParams={springParams}
                 bezierParams={bezierParams}
+                bezierProgress={bezierProgress}
+                springProgress={springProgress}
               />
               {showLegend && (
                 <CurveLegend
@@ -77,7 +83,15 @@ const App = () => {
                 bezierParams={bezierParams}
               />
             </View>
+
           </View>
+
+          <AnimatedCircles
+            bezierProgress={bezierProgress}
+            springProgress={springProgress}
+            springActive={springActive}
+            bezierActive={bezierActive}
+          />
         </View>
       </ScrollView>
 
