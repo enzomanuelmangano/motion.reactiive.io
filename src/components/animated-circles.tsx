@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
@@ -22,14 +23,22 @@ export const AnimatedCircles = ({
 }: AnimatedCirclesProps) => {
   const { styles, theme } = useStyles(styleSheet);
 
+  const containerWidth = useSharedValue(0);
+  const CIRCLE_WIDTH = 32;
+  const TRACK_PADDING = 4; // left padding for the circle
+
   const springOpacity = useDerivedValue(() => (springActive.value ? 1 : 0.3));
   const bezierOpacity = useDerivedValue(() => (bezierActive.value ? 1 : 0.3));
+
+  const maxTranslateX = useDerivedValue(() =>
+    Math.max(0, containerWidth.value - CIRCLE_WIDTH - TRACK_PADDING * 2),
+  );
 
   const bezierAnimatedStyle = useAnimatedStyle(() => {
     const translateX = interpolate(
       bezierProgress.value,
       [0, 1],
-      [0, 200 - 32], // track width - circle width
+      [theme.spacing.sm, maxTranslateX.value - theme.spacing.sm],
     );
 
     return {
@@ -42,7 +51,7 @@ export const AnimatedCircles = ({
     const translateX = interpolate(
       springProgress.value,
       [0, 1],
-      [0, 200 - 32], // track width - circle width
+      [theme.spacing.sm, maxTranslateX.value - theme.spacing.sm],
     );
 
     return {
@@ -51,31 +60,31 @@ export const AnimatedCircles = ({
     };
   });
 
+  const handleLayout = (event: {
+    nativeEvent: { layout: { width: number } };
+  }) => {
+    containerWidth.value = event.nativeEvent.layout.width;
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.label}>Timing</Text>
-        <View style={styles.track}>
-          <Animated.View
-            style={[
-              styles.circle,
-              { backgroundColor: theme.colors.primary.bezier },
-              bezierAnimatedStyle,
-            ]}
-          />
-        </View>
+    <View style={styles.container} onLayout={handleLayout}>
+      <View style={styles.track}>
+        <Animated.View
+          style={[
+            styles.circle,
+            { backgroundColor: theme.colors.primary.bezier },
+            bezierAnimatedStyle,
+          ]}
+        />
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Spring</Text>
-        <View style={styles.track}>
-          <Animated.View
-            style={[
-              styles.circle,
-              { backgroundColor: theme.colors.primary.spring },
-              springAnimatedStyle,
-            ]}
-          />
-        </View>
+      <View style={styles.track}>
+        <Animated.View
+          style={[
+            styles.circle,
+            { backgroundColor: theme.colors.primary.spring },
+            springAnimatedStyle,
+          ]}
+        />
       </View>
     </View>
   );
@@ -83,32 +92,17 @@ export const AnimatedCircles = ({
 
 const styleSheet = createStyleSheet(theme => ({
   container: {
-    gap: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.xl,
-    backgroundColor: theme.colors.background.secondary,
+    gap: theme.spacing.xs,
+    paddingVertical: theme.spacing.sm,
     borderRadius: theme.borderRadius.xl,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
-    alignSelf: 'center',
+    marginTop: theme.spacing.lg,
     width: '100%',
-    maxWidth: theme.dimensions.canvas.maxWidth,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.text.secondary,
-    width: 60,
   },
   track: {
-    flex: 1,
+    width: '100%',
     height: 40,
-    backgroundColor: theme.colors.background.track,
     borderRadius: 20,
     justifyContent: 'center',
   },
@@ -118,13 +112,5 @@ const styleSheet = createStyleSheet(theme => ({
     borderRadius: 16,
     position: 'absolute',
     left: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 4,
   },
 }));

@@ -82,16 +82,14 @@ const App = () => {
                 springParams={springParams}
                 bezierParams={bezierParams}
               />
+              <AnimatedCircles
+                bezierProgress={bezierProgress}
+                springProgress={springProgress}
+                springActive={springActive}
+                bezierActive={bezierActive}
+              />
             </View>
-
           </View>
-
-          <AnimatedCircles
-            bezierProgress={bezierProgress}
-            springProgress={springProgress}
-            springActive={springActive}
-            bezierActive={bezierActive}
-          />
         </View>
       </ScrollView>
 
