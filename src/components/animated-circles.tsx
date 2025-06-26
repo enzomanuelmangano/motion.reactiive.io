@@ -97,7 +97,6 @@ const styleSheet = createStyleSheet(theme => ({
     borderRadius: theme.borderRadius.xl,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
-    marginTop: theme.spacing.lg,
     width: '100%',
   },
   track: {
