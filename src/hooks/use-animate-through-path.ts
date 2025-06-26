@@ -21,8 +21,13 @@ const getPathPoints = (path: SkPath): Point[] => {
     return [{ x: 0, y: 0 }];
   }
 
-  for (let i = 0; i < totalLength; i++) {
-    const point = geometry.getPointAtLength(i);
+  // Optimize: Use fixed number of samples instead of sampling every pixel
+  const SAMPLE_COUNT = 50; // Reduced from potentially 300-800+ points
+  const step = totalLength / SAMPLE_COUNT;
+
+  for (let i = 0; i <= SAMPLE_COUNT; i++) {
+    const distance = Math.min(i * step, totalLength);
+    const point = geometry.getPointAtLength(distance);
     points.push({ x: point.x, y: point.y });
   }
   return points;

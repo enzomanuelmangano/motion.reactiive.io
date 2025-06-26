@@ -30,7 +30,7 @@ export const SpringCurve = ({
 }: SpringCurveProps) => {
   const path = useDerivedValue(() => {
     const springPath = Skia.Path.Make();
-    const steps = 100;
+    const steps = 50; // Reduced from 100 to 50 for better performance
 
     const m = mass.value;
     const c = damping.value;
@@ -55,10 +55,21 @@ export const SpringCurve = ({
     const zeta = c / (2 * Math.sqrt(k * m));
     const dt = 1 / steps;
 
+    // Precompute constants to avoid repeated calculations
+    const zetaOmega = zeta * omega;
+    const oneMinusZetaSquared = 1 - zeta * zeta;
+
     let s1 = 0;
     let s2 = 0;
+    let omegaD = 0;
+    let sinTermCoefficient = 0;
 
-    if (zeta > 1) {
+    if (zeta < 1) {
+      omegaD = omega * Math.sqrt(oneMinusZetaSquared);
+      if (omegaD > 0) {
+        sinTermCoefficient = zetaOmega / omegaD;
+      }
+    } else if (zeta > 1) {
       const sqrtTerm = Math.sqrt(zeta * zeta - 1);
       s1 = -omega * (zeta - sqrtTerm);
       s2 = -omega * (zeta + sqrtTerm);
@@ -79,13 +90,11 @@ export const SpringCurve = ({
       let displacement = 0;
 
       if (zeta < 1) {
-        const omegaD = omega * Math.sqrt(1 - zeta * zeta);
-        // Ensure omegaD is not zero, which it shouldn't be if zeta < 1 and omega > 0.
-        // If omegaD were zero, it implies zeta is 1, which is handled by the next case.
+        // Use precomputed values to avoid repeated calculations
         if (omegaD > 0) {
-          const sinTermCoefficient = (zeta * omega) / omegaD;
+          const expTerm = Math.exp(-zetaOmega * t);
           displacement =
-            Math.exp(-zeta * omega * t) *
+            expTerm *
             (Math.cos(omegaD * t) + sinTermCoefficient * Math.sin(omegaD * t));
         } else {
           // Fallback for extremely rare case where omegaD might be non-positive due to precision with zeta very near 1.
@@ -148,6 +157,16 @@ export const SpringCurve = ({
   return (
     <Group>
       <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} />
+      {/* Background path with reduced opacity */}
+      <Path
+        path={path}
+        style="stroke"
+        strokeWidth={strokeWidth}
+        color={color}
+        strokeCap="round"
+        opacity={0.3}
+      />
+      {/* Animated progress path */}
       <Path
         path={path}
         style="stroke"
@@ -156,14 +175,6 @@ export const SpringCurve = ({
         strokeCap="round"
         start={0}
         end={progress}
-      />
-      <Path
-        path={path}
-        style="stroke"
-        strokeWidth={strokeWidth}
-        color={color}
-        strokeCap="round"
-        opacity={0.5}
       />
     </Group>
   );

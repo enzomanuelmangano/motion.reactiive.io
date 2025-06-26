@@ -104,35 +104,45 @@ export const BezierCurve = ({
       };
     }, [width, height, horizontalPadding, verticalPadding]);
 
-  const cp1x = useDerivedValue(() => {
-    return startX + x1.value * drawableWidth;
-  }, [startX, x1, drawableWidth]);
+  // Batch all control point calculations into a single derived value for better performance
+  const controlPoints = useDerivedValue(() => {
+    const cp1x = startX + x1.value * drawableWidth;
+    const cp1y = startY - y1.value * drawableHeight;
+    const cp2x = endX - (1 - x2.value) * drawableWidth;
+    const cp2y = endY + (1 - y2.value) * drawableHeight;
 
-  const cp1y = useDerivedValue(() => {
-    return startY - y1.value * drawableHeight;
-  }, [startY, y1, drawableHeight]);
-
-  const cp2x = useDerivedValue(() => {
-    return endX - (1 - x2.value) * drawableWidth;
-  }, [endX, x2, drawableWidth]);
-
-  const cp2y = useDerivedValue(() => {
-    return endY + (1 - y2.value) * drawableHeight;
-  }, [endY, y2, drawableHeight]);
-
-  const firstControlPoint = useDerivedValue(() => {
     return {
-      x: cp1x.value,
-      y: cp1y.value,
+      cp1x,
+      cp1y,
+      cp2x,
+      cp2y,
+      firstControlPoint: { x: cp1x, y: cp1y },
+      secondControlPoint: { x: cp2x, y: cp2y },
     };
-  }, [cp1x, cp1y]);
+  }, [
+    startX,
+    startY,
+    endX,
+    endY,
+    x1,
+    y1,
+    x2,
+    y2,
+    drawableWidth,
+    drawableHeight,
+  ]);
 
-  const secondControlPoint = useDerivedValue(() => {
-    return {
-      x: cp2x.value,
-      y: cp2y.value,
-    };
-  }, [cp2x, cp2y]);
+  // Extract individual values for compatibility
+  const cp1x = useDerivedValue(() => controlPoints.value.cp1x);
+  const cp1y = useDerivedValue(() => controlPoints.value.cp1y);
+  const cp2x = useDerivedValue(() => controlPoints.value.cp2x);
+  const cp2y = useDerivedValue(() => controlPoints.value.cp2y);
+  const firstControlPoint = useDerivedValue(
+    () => controlPoints.value.firstControlPoint,
+  );
+  const secondControlPoint = useDerivedValue(
+    () => controlPoints.value.secondControlPoint,
+  );
 
   const path = useDerivedValue(() => {
     const bezierPath = Skia.Path.Make();
@@ -145,14 +155,21 @@ export const BezierCurve = ({
       return bezierPath;
     }
 
+    const {
+      cp1x: cp1xVal,
+      cp1y: cp1yVal,
+      cp2x: cp2xVal,
+      cp2y: cp2yVal,
+    } = controlPoints.value;
+
     // Safety check for invalid coordinates
     const coords = [
       startX,
       startY,
-      cp1x.value,
-      cp1y.value,
-      cp2x.value,
-      cp2y.value,
+      cp1xVal,
+      cp1yVal,
+      cp2xVal,
+      cp2yVal,
       endX,
       endY,
     ];
@@ -166,17 +183,10 @@ export const BezierCurve = ({
 
     // Create cubic Bezier curve with constrained control points
     bezierPath.moveTo(startX, startY);
-    bezierPath.cubicTo(
-      cp1x.value,
-      cp1y.value,
-      cp2x.value,
-      cp2y.value,
-      endX,
-      endY,
-    );
+    bezierPath.cubicTo(cp1xVal, cp1yVal, cp2xVal, cp2yVal, endX, endY);
 
     return bezierPath;
-  }, [width, height, x1, y1, x2, y2, horizontalPadding, verticalPadding]);
+  }, [width, height, controlPoints, horizontalPadding, verticalPadding]);
 
   const animateThroughPathParams = useMemo(() => {
     return {
@@ -224,6 +234,16 @@ export const BezierCurve = ({
   return (
     <Group>
       <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} />
+      {/* Background path with reduced opacity */}
+      <Path
+        path={path}
+        style="stroke"
+        strokeWidth={strokeWidth}
+        color={color}
+        strokeCap="round"
+        opacity={0.3}
+      />
+      {/* Animated progress path */}
       <Path
         path={path}
         style="stroke"
@@ -232,14 +252,6 @@ export const BezierCurve = ({
         strokeCap="round"
         start={0}
         end={progress}
-      />
-      <Path
-        path={path}
-        style="stroke"
-        strokeWidth={strokeWidth}
-        color={color}
-        strokeCap="round"
-        opacity={0.5}
       />
       <Line
         p1={{ x: startX, y: startY }}
