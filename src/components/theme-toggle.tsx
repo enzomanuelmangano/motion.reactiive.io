@@ -15,19 +15,19 @@ export const ThemeToggle: React.FC = () => {
   return (
     <PressableHighlight
       style={styles.container}
-      activeBackgroundColor={theme.colors.background.primary}
+      activeBackgroundColor={theme.colors.background.surface}
       inactiveBackgroundColor={theme.colors.background.primary}
-      minScale={0.9}
-      maxScale={1.05}
+      minScale={0.92}
+      maxScale={1.08}
       contentStyle={{
         alignItems: 'center',
         justifyContent: 'center',
       }}
       onPress={toggleTheme}>
       <Ionicons
-        name={isDark ? 'sunny-outline' : 'moon-outline'}
+        name={isDark ? 'moon' : 'sunny'}
         size={18}
-        color={theme.colors.text.secondary}
+        color={theme.colors.text.primary}
       />
     </PressableHighlight>
   );
@@ -57,11 +57,13 @@ export const GitHubRepo = () => {
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
     backgroundColor: theme.colors.background.primary,
+    // Add subtle shadow for better visual hierarchy
+    ...theme.shadows.small,
   },
 }));

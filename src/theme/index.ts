@@ -14,7 +14,7 @@ export const colors = {
   // Background Colors
   background: {
     primary: '#000000', // Main app background
-    secondary: '#000000', // Canvas background
+    secondary: '#0a0a0a', // Controls/panel background (slightly lighter than primary)
     overlay: 'rgba(17, 17, 17, 0.7)', // Controls overlay
     surface: 'rgba(255, 255, 255, 0.05)', // Tab container background
     track: 'rgba(255, 255, 255, 0.08)', // Slider track background
@@ -22,8 +22,8 @@ export const colors = {
 
   // Border Colors
   border: {
-    primary: '#191919ff', // Canvas border
-    secondary: 'rgba(255,255,255,0.05)', // Controls border
+    primary: '#1a1a1a', // Canvas border
+    secondary: 'rgba(255,255,255,0.1)', // Controls border
   },
 
   // Text Colors

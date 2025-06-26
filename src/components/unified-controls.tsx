@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text } from 'react-native';
-import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Color from 'color';
@@ -182,12 +181,7 @@ export const UnifiedControls: React.FC<UnifiedControlsProps> = ({
         </PressableHighlight>
       </View>
 
-      <Animated.View
-        key={activeTab}
-        entering={FadeIn.duration(200).easing(Easing.linear)}
-        exiting={FadeOut.duration(150).easing(Easing.linear)}>
-        <Controls items={controlItems} />
-      </Animated.View>
+      <Controls items={controlItems} />
     </View>
   );
 };
