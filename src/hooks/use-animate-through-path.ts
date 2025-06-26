@@ -48,7 +48,7 @@ export const useAnimateThroughPath = ({
   const cx = useDerivedValue(() => {
     if (points.value.length <= 1) return 0;
     const inputRange = points.value.map(
-      (_, index) => index / points.value.length,
+      (_, index) => index / (points.value.length - 1),
     );
     const pointsX = points.value.map(point => point.x);
     return interpolate(progress.value, inputRange, pointsX);
@@ -57,7 +57,7 @@ export const useAnimateThroughPath = ({
   const cy = useDerivedValue(() => {
     if (points.value.length <= 1) return 0;
     const inputRange = points.value.map(
-      (_, index) => index / points.value.length,
+      (_, index) => index / (points.value.length - 1),
     );
     const pointsY = points.value.map(point => point.y);
     return interpolate(progress.value, inputRange, pointsY);

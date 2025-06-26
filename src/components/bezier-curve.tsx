@@ -233,7 +233,7 @@ export const BezierCurve = ({
 
   return (
     <Group>
-      <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} />
+      <Circle cx={point.cx} cy={point.cy} r={strokeWidth * 2} color={color} style="fill" />
       {/* Background path with reduced opacity */}
       <Path
         path={path}
