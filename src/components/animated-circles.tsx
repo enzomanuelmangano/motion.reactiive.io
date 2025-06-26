@@ -25,7 +25,7 @@ export const AnimatedCircles = ({
 
   const containerWidth = useSharedValue(0);
   const CIRCLE_WIDTH = 32;
-  const TRACK_PADDING = 4; // left padding for the circle
+  const TRACK_PADDING = 8; // left padding for the circle
 
   const springOpacity = useDerivedValue(() => (springActive.value ? 1 : 0.3));
   const bezierOpacity = useDerivedValue(() => (bezierActive.value ? 1 : 0.3));
@@ -38,7 +38,7 @@ export const AnimatedCircles = ({
     const translateX = interpolate(
       bezierProgress.value,
       [0, 1],
-      [theme.spacing.sm, maxTranslateX.value - theme.spacing.sm],
+      [theme.spacing.lg, maxTranslateX.value - theme.spacing.lg],
     );
 
     return {
@@ -51,7 +51,7 @@ export const AnimatedCircles = ({
     const translateX = interpolate(
       springProgress.value,
       [0, 1],
-      [theme.spacing.sm, maxTranslateX.value - theme.spacing.sm],
+      [theme.spacing.lg, maxTranslateX.value - theme.spacing.lg],
     );
 
     return {
@@ -69,6 +69,7 @@ export const AnimatedCircles = ({
   return (
     <View style={styles.container} onLayout={handleLayout}>
       <View style={styles.track}>
+        <View style={styles.groundLine} />
         <Animated.View
           style={[
             styles.circle,
@@ -78,6 +79,7 @@ export const AnimatedCircles = ({
         />
       </View>
       <View style={styles.track}>
+        <View style={styles.groundLine} />
         <Animated.View
           style={[
             styles.circle,
@@ -92,24 +94,42 @@ export const AnimatedCircles = ({
 
 const styleSheet = createStyleSheet(theme => ({
   container: {
-    gap: theme.spacing.xs,
+    gap: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
+    paddingBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     borderRadius: theme.borderRadius.xl,
     borderWidth: theme.strokeWidths.thin,
     borderColor: theme.colors.border.primary,
+    backgroundColor: theme.colors.background.secondary,
     width: '100%',
   },
   track: {
     width: '100%',
-    height: 40,
-    borderRadius: 20,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
+    position: 'relative',
+  },
+  groundLine: {
+    position: 'absolute',
+    bottom: 7,
+    left: theme.spacing.md,
+    right: theme.spacing.md,
+    height: 1,
+    backgroundColor: theme.colors.border.primary,
+    borderRadius: 0.5,
+    ...theme.shadows.small,
+    shadowOpacity: 0.1,
   },
   circle: {
     width: 32,
     height: 32,
     borderRadius: 16,
     position: 'absolute',
-    left: 4,
+    left: 8,
+    bottom: 8, // Position circle just above the ground line
+    ...theme.shadows.small,
+    shadowOpacity: 0.2,
   },
 }));

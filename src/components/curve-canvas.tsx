@@ -54,15 +54,7 @@ const SpringConfig = {
   damping: 5,
 };
 
-const DarkColors = {
-  basePrimary: 'rgba(0,0,0,0)',
-  baseSecondary: 'rgba(0,0,0,1)',
-};
-
-const LightColors = {
-  basePrimary: 'rgba(255,255,255,0)',
-  baseSecondary: 'rgba(255,255,255,0.04)',
-};
+// Colors will be dynamically set based on theme
 
 export const CurveCanvas = memo(
   ({
@@ -133,12 +125,10 @@ export const CurveCanvas = memo(
 
     const composedGesture = Gesture.Simultaneous(tapGesture, hoverGesture);
 
-    const basePrimary = isDark
-      ? LightColors.basePrimary
-      : DarkColors.basePrimary;
-    const baseSecondary = isDark
-      ? LightColors.baseSecondary
-      : LightColors.baseSecondary;
+    const basePrimary = theme.colors.background.secondary;
+    const baseSecondary = Color(theme.colors.background.secondary)
+      .lighten(0.1)
+      .toString();
 
     const baseBorder = theme.colors.border.primary;
     const baseBorderSecondary = Color(baseBorder)
